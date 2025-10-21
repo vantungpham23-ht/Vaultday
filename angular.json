@@ -27,7 +27,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "outputPath": "dist/VaultDay/browser",
+            "outputPath": "dist/VaultDay/browser/browser",
             "assets": [
               {
                 "glob": "**/*",
