@@ -61,32 +61,45 @@ export class HomeComponent implements OnInit {
       const { roomId } = this.joinRoomForm.value;
       
       try {
-        // Kiểm tra xem phòng có tồn tại không
-        const { data: existingRoom, error } = await this.databaseService.getRoomById(roomId);
+        // Kiểm tra xem phòng có tồn tại không (theo ID)
+        const { data: existingRoomById, error: idError } = await this.databaseService.getRoomById(roomId);
         
-        if (error || !existingRoom) {
-          // Phòng không tồn tại, tạo phòng mới với mã code này
-          const { data: newRoom, error: createError } = await this.databaseService.createRoom(`Room-${roomId}`, undefined, true);
+        if (idError || !existingRoomById) {
+          // Không tìm thấy phòng theo ID, kiểm tra theo tên
+          const roomName = `Room-${roomId}`;
+          const { data: existingRoomByName, error: nameError } = await this.databaseService.getRoomByName(roomName);
           
-          if (createError || !newRoom) {
-            console.error('Error creating room:', createError);
-            this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
-            this.isLoading = false;
-            return;
+          if (nameError || !existingRoomByName) {
+            // Phòng không tồn tại, tạo phòng mới với mã code này
+            const { data: newRoom, error: createError } = await this.databaseService.createRoom(roomName, undefined, true);
+            
+            if (createError || !newRoom) {
+              console.error('Error creating room:', createError);
+              this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
+              this.isLoading = false;
+              return;
+            }
+            
+            this.successMessage = 'Phòng mới đã được tạo với mã này!';
+            this.generatedRoomCode = newRoom.id; // Sử dụng ID thực tế của phòng
+            this.currentRoom = newRoom;
+            
+            // Tự động chuyển vào phòng chat
+            setTimeout(() => {
+              this.router.navigate(['/room', newRoom.id]);
+            }, 1500);
+          } else {
+            // Phòng đã tồn tại với tên này, join vào phòng đó
+            this.currentRoom = existingRoomByName;
+            this.successMessage = 'Đã tham gia phòng hiện có!';
+            setTimeout(() => {
+              this.router.navigate(['/room', existingRoomByName.id]);
+            }, 1000);
           }
-          
-          this.successMessage = 'Phòng mới đã được tạo với mã này!';
-          this.generatedRoomCode = roomId;
-          this.currentRoom = newRoom;
-          
-          // Tự động chuyển vào phòng chat
-          setTimeout(() => {
-            this.router.navigate(['/room', newRoom.id]);
-          }, 1500);
         } else {
-          // Phòng đã tồn tại, vào phòng đó
-          this.currentRoom = existingRoom;
-          this.router.navigate(['/room', roomId]);
+          // Phòng đã tồn tại theo ID, vào phòng đó
+          this.currentRoom = existingRoomById;
+          this.router.navigate(['/room', existingRoomById.id]); // Sử dụng ID thực tế
         }
       } catch (error) {
         console.error('Error:', error);

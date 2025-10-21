@@ -105,6 +105,23 @@ export class DatabaseService {
     }
   }
 
+  async getRoomByName(name: string): Promise<{ data: Room | null; error: any }> {
+    try {
+      const query = `
+        SELECT * FROM rooms 
+        WHERE name = $1
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+      const params = [name];
+      
+      const result = await this.queryDatabase(query, params);
+      return { data: result[0] || null, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  }
+
   async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
     try {
       const query = `
