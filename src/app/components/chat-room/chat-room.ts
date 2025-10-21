@@ -109,7 +109,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       console.error('Error loading messages:', error);
       this.errorMessage = 'Không thể tải tin nhắn';
     } else {
-      this.messages = data || [];
+      // Decrypt all messages at once
+      this.messages = await this.chatService.decryptAllMessages(data || [], this.roomId);
     }
     this.isLoading = false;
   }
@@ -117,8 +118,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   subscribeToMessages() {
     if (!this.roomId) return;
 
-    this.chatService.listenToRoom(this.roomId, (newMessage: Message) => {
-      this.messages.push(newMessage);
+    // Unsubscribe first to prevent multiple subscriptions
+    this.chatService.unsubscribeFromRoom(this.roomId);
+
+    this.chatService.listenToRoom(this.roomId, async (newMessage: Message) => {
+      // Check if message already exists to prevent duplicates
+      const messageExists = this.messages.some(msg => msg.id === newMessage.id);
+      if (!messageExists) {
+        // Decrypt the new message before adding
+        const decryptedMessages = await this.chatService.decryptAllMessages([newMessage], this.roomId!);
+        this.messages.push(decryptedMessages[0]);
+      }
     });
   }
 

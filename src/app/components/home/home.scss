@@ -439,6 +439,36 @@
 
 /* Room Status */
 
+/* Simple Footer */
+.simple-footer {
+  margin-top: auto;
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--border-neon);
+  background: var(--bg-primary);
+  
+  .footer-content {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    
+    .footer-text {
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      margin: 0 0 var(--space-xs) 0;
+      font-weight: 400;
+    }
+    
+    .version-text {
+      color: var(--neon-accent);
+      font-size: var(--font-size-xs);
+      margin: 0;
+      font-weight: 600;
+      text-shadow: 0 0 5px var(--neon-accent);
+    }
+  }
+}
+
 /* Animations */
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -491,6 +521,22 @@
     .section-header,
     .form-container {
       padding: var(--space-md);
+    }
+  }
+  
+  .simple-footer {
+    padding: var(--space-md) 0;
+    
+    .footer-content {
+      padding: 0 var(--space-md);
+      
+      .footer-text {
+        font-size: var(--font-size-xs);
+      }
+      
+      .version-text {
+        font-size: 10px;
+      }
     }
   }
   

@@ -10,6 +10,7 @@ export interface Message {
   user_id: string | null;
   encrypted?: boolean;
   encryption_data?: EncryptedMessage;
+  decryptedContent?: string; // Cache for decrypted content
 }
 
 @Injectable({
@@ -54,6 +55,26 @@ export class ChatService {
       console.error('Database query error:', error);
       throw error;
     }
+  }
+
+  async decryptAllMessages(messages: Message[], roomId: string): Promise<Message[]> {
+    const decryptedMessages = await Promise.all(
+      messages.map(async (message) => {
+        if (message.decryptedContent) {
+          return message; // Already decrypted
+        }
+        
+        try {
+          const decryptedContent = await this.decryptMessage(message, roomId);
+          return { ...message, decryptedContent };
+        } catch (error) {
+          console.error('Failed to decrypt message:', error);
+          return { ...message, decryptedContent: message.content };
+        }
+      })
+    );
+    
+    return decryptedMessages;
   }
 
   async decryptMessage(message: Message, roomId: string): Promise<string> {
