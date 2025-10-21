@@ -25,6 +25,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   errorMessage = '';
   showPasswordModal = false;
   isPasswordRequired = false;
+  showRoomSettings = false;
+  roomVisibilityToggle = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,6 +92,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Phòng không tồn tại';
     } else {
       this.room = data;
+      this.roomVisibilityToggle = this.room?.is_public || false;
     }
   }
 
@@ -160,6 +163,31 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(['/']);
+  }
+
+  toggleRoomSettings() {
+    this.showRoomSettings = !this.showRoomSettings;
+  }
+
+  async toggleRoomVisibility() {
+    if (!this.roomId) return;
+    
+    const newVisibility = !this.roomVisibilityToggle;
+    const { data, error } = await this.databaseService.updateRoomVisibility(this.roomId, newVisibility);
+    
+    if (error) {
+      console.error('Error updating room visibility:', error);
+      this.errorMessage = 'Không thể cập nhật trạng thái phòng';
+    } else {
+      this.roomVisibilityToggle = newVisibility;
+      if (this.room) {
+        this.room.is_public = newVisibility;
+      }
+      this.successMessage = newVisibility ? 'Phòng đã được công khai' : 'Phòng đã được ẩn';
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    }
   }
 
   get content() {

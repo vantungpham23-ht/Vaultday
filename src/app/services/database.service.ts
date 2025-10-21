@@ -6,6 +6,7 @@ export interface Room {
   name: string;
   password: string | null;
   created_by: string | null;
+  is_public: boolean;
 }
 
 @Injectable({
@@ -88,14 +89,14 @@ export class DatabaseService {
     }
   }
 
-  async createRoom(name: string, password?: string): Promise<{ data: Room | null; error: any }> {
+  async createRoom(name: string, password?: string, isPublic: boolean = true): Promise<{ data: Room | null; error: any }> {
     try {
       const query = `
-        INSERT INTO rooms (name, password, created_at)
-        VALUES ($1, $2, NOW())
+        INSERT INTO rooms (name, password, is_public, created_at)
+        VALUES ($1, $2, $3, NOW())
         RETURNING *
       `;
-      const params = [name, password || null];
+      const params = [name, password || null, isPublic];
       
       const result = await this.queryDatabase(query, params);
       return { data: result[0] || null, error: null };
@@ -108,7 +109,7 @@ export class DatabaseService {
     try {
       const query = `
         SELECT * FROM rooms 
-        WHERE password IS NULL 
+        WHERE is_public = true 
         ORDER BY created_at DESC
       `;
       
@@ -119,13 +120,15 @@ export class DatabaseService {
     }
   }
 
-  async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
+  async updateRoomVisibility(roomId: string, isPublic: boolean): Promise<{ data: Room | null; error: any }> {
     try {
       const query = `
-        SELECT * FROM rooms 
-        WHERE id = $1
+        UPDATE rooms 
+        SET is_public = $1 
+        WHERE id = $2 
+        RETURNING *
       `;
-      const params = [id];
+      const params = [isPublic, roomId];
       
       const result = await this.queryDatabase(query, params);
       return { data: result[0] || null, error: null };

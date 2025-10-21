@@ -37,12 +37,15 @@
         </div>
       </div>
     </div>
-    <div class="header-right">
-      <div class="online-indicator">
-        <span class="indicator-icon">👥</span>
-        <span class="indicator-text">Online</span>
-      </div>
-    </div>
+           <div class="header-right">
+             <button (click)="toggleRoomSettings()" class="settings-button">
+               <span class="settings-icon">⚙️</span>
+             </button>
+             <div class="online-indicator">
+               <span class="indicator-icon">👥</span>
+               <span class="indicator-text">Online</span>
+             </div>
+           </div>
   </div>
 
   <!-- Countdown Timer -->
@@ -84,6 +87,46 @@
               Xác nhận
             </button>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Room Settings Panel -->
+    <div *ngIf="showRoomSettings" class="room-settings-panel">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h3 class="settings-title">Cài Đặt Phòng</h3>
+          <button (click)="toggleRoomSettings()" class="close-settings">
+            <span class="close-icon">✕</span>
+          </button>
+        </div>
+        
+        <div class="settings-body">
+          <div class="setting-item">
+            <div class="setting-label">
+              <span class="setting-icon">🌐</span>
+              <span class="setting-text">Hiển thị công khai</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [checked]="roomVisibilityToggle"
+                  (change)="toggleRoomVisibility()"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="setting-description">
+            <p *ngIf="roomVisibilityToggle" class="description-text">
+              ✅ Phòng này sẽ hiển thị trong danh sách phòng công khai
+            </p>
+            <p *ngIf="!roomVisibilityToggle" class="description-text">
+              🔒 Phòng này sẽ ẩn khỏi danh sách phòng công khai
+            </p>
+          </div>
         </div>
       </div>
     </div>

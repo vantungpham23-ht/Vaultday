@@ -13,6 +13,158 @@
   overflow: hidden;
 }
 
+/* Room Settings Panel */
+.room-settings-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-lg);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.settings-content {
+  background: var(--bg-card);
+  border: 2px solid var(--border-neon);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neon-glow-lg);
+  width: 100%;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.settings-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-neon);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+
+  .settings-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-shadow: var(--neon-glow-sm);
+    margin: 0;
+  }
+
+  .close-settings {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(var(--error), 0.1);
+      color: var(--error);
+    }
+
+    .close-icon {
+      font-size: var(--font-size-lg);
+    }
+  }
+}
+
+.settings-body {
+  padding: var(--space-lg);
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+
+    .setting-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+
+      .setting-icon {
+        font-size: var(--font-size-lg);
+      }
+
+      .setting-text {
+        font-size: var(--font-size-base);
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+    }
+
+    .setting-control {
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+
+        input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+
+          &:checked + .toggle-slider {
+            background-color: var(--neon-primary);
+          }
+
+          &:checked + .toggle-slider:before {
+            transform: translateX(26px);
+          }
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: var(--bg-tertiary);
+          border: 1px solid var(--border-muted);
+          transition: 0.3s;
+          border-radius: 24px;
+
+          &:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--text-primary);
+            transition: 0.3s;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+  }
+
+  .setting-description {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-muted);
+
+    .description-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
 /* Modals */
 .username-modal,
 .password-modal {
@@ -275,17 +427,37 @@
     }
   }
 
-  .online-indicator {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
+         .settings-button {
+           background: none;
+           border: none;
+           color: var(--text-secondary);
+           cursor: pointer;
+           padding: var(--space-sm);
+           border-radius: var(--radius-md);
+           transition: all 0.2s ease;
+           margin-right: var(--space-sm);
 
-    .indicator-icon {
-      font-size: var(--font-size-sm);
-    }
-  }
+           &:hover {
+             background: rgba(var(--neon-primary), 0.1);
+             color: var(--neon-primary);
+           }
+
+           .settings-icon {
+             font-size: var(--font-size-lg);
+           }
+         }
+
+         .online-indicator {
+           display: flex;
+           align-items: center;
+           gap: var(--space-xs);
+           font-size: var(--font-size-xs);
+           color: var(--text-secondary);
+
+           .indicator-icon {
+             font-size: var(--font-size-sm);
+           }
+         }
 }
 
 /* Countdown Section */
@@ -463,6 +635,17 @@
     margin: 0;
     font-style: italic;
     opacity: 0.7;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
