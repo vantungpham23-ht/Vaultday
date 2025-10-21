@@ -18,7 +18,7 @@ export class DatabaseService {
   // Test database connection
   async testConnection(): Promise<{ ok: boolean; data?: any; error?: any }> {
     try {
-      const response = await fetch('/.netlify/functions/test-simple', {
+      const response = await fetch('/.netlify/functions/test-db-simple', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

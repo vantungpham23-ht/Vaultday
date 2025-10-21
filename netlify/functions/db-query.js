@@ -60,10 +60,28 @@ exports.handler = async (event, context) => {
       };
     }
 
-  const pool = new Pool({ 
-    connectionString,
-    webSocketConstructor: require('ws').WebSocket
-  });
+  // Try different connection methods for Netlify Functions
+  let pool;
+  try {
+    // Method 1: Try without WebSocket constructor (fallback to HTTP)
+    pool = new Pool({ 
+      connectionString
+    });
+    console.log('Created pool without WebSocket constructor');
+  } catch (wsError) {
+    console.log('WebSocket method failed, trying with ws package:', wsError.message);
+    try {
+      // Method 2: Try with WebSocket constructor
+      pool = new Pool({ 
+        connectionString,
+        webSocketConstructor: require('ws').WebSocket
+      });
+      console.log('Created pool with WebSocket constructor');
+    } catch (error) {
+      console.error('Both connection methods failed:', error);
+      throw error;
+    }
+  }
   
   try {
     let query, params = [];
