@@ -8,6 +8,7 @@ export interface Message {
   content: string;
   room_id: string;
   user_id: string | null;
+  username?: string; // Add username to message
   encrypted?: boolean;
   encryption_data?: EncryptedMessage;
   decryptedContent?: string; // Cache for decrypted content
@@ -122,7 +123,7 @@ export class ChatService {
     }
   }
 
-  async sendMessage(roomId: string, content: string, userId: string): Promise<{ data: Message | null; error: any }> {
+  async sendMessage(roomId: string, content: string, userId: string, username?: string): Promise<{ data: Message | null; error: any }> {
     if (this.environmentService.isLocalEnvironment()) {
       // Create mock message for local development with encryption
       let encryptedContent = content;
@@ -142,6 +143,7 @@ export class ChatService {
         room_id: roomId,
         content: encryptedContent,
         user_id: userId,
+        username: username, // Add username to message
         created_at: new Date().toISOString(),
         encrypted: encryptionData !== undefined,
         encryption_data: encryptionData
@@ -159,11 +161,11 @@ export class ChatService {
     }
     try {
       const query = `
-        INSERT INTO messages (room_id, content, user_id, created_at)
-        VALUES ($1, $2, $3, NOW())
+        INSERT INTO messages (room_id, content, user_id, username, created_at)
+        VALUES ($1, $2, $3, $4, NOW())
         RETURNING *
       `;
-      const params = [roomId, content, userId];
+      const params = [roomId, content, userId, username];
       
       const result = await this.queryDatabase(query, params);
       return { data: result[0] || null, error: null };

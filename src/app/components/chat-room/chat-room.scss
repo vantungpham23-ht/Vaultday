@@ -635,7 +635,8 @@
     .message-content {
       background: var(--bg-card);
       color: white;
-      border-color: var(--border-neon);
+      border-color: var(--user-color-dark, var(--border-neon));
+      border-left: 3px solid var(--user-color, var(--neon-primary));
     }
     
     .message-meta {
@@ -650,6 +651,15 @@
     border-radius: var(--radius-lg);
     border: 1px solid;
     box-shadow: var(--neon-glow-sm);
+  }
+
+  .message-username {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--user-color, var(--neon-primary));
+    margin-bottom: var(--space-xs);
+    text-shadow: 0 0 5px var(--user-color, var(--neon-primary));
+    opacity: 0.9;
   }
 
   .message-text {

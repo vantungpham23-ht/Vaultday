@@ -213,8 +213,15 @@
         <div *ngFor="let message of messages; trackBy: trackByMessageId" 
              class="message-item" 
              [class.own-message]="isOwnMessage(message)"
-             [class.other-message]="!isOwnMessage(message)">
+             [class.other-message]="!isOwnMessage(message)"
+             [style.--user-color]="getUserColor(message.user_id || '')"
+             [style.--user-color-light]="getUserColorLight(message.user_id || '')"
+             [style.--user-color-dark]="getUserColorDark(message.user_id || '')">
           <div class="message-content">
+            <!-- Username for other messages -->
+            <div *ngIf="!isOwnMessage(message)" class="message-username">
+              {{ getMessageUsername(message) }}
+            </div>
             <div class="message-text">{{ message.decryptedContent || message.content }}</div>
             <div class="message-meta">
               <span class="message-time">{{ message.created_at | date:'HH:mm' }}</span>

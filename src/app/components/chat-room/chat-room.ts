@@ -10,6 +10,7 @@ import { EncryptionService } from '../../services/encryption.service';
 import { StorageService } from '../../services/storage.service';
 import { SoundService } from '../../services/sound.service';
 import { SoundClickDirective } from '../../directives/sound-click.directive';
+import { UserColorService } from '../../services/user-color.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -47,7 +48,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     public encryptionService: EncryptionService,
     private storageService: StorageService,
-    private soundService: SoundService
+    private soundService: SoundService,
+    public userColorService: UserColorService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
@@ -226,7 +228,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       const { error } = await this.chatService.sendMessage(
         this.roomId,
         content, // Send just the content, not with username prefix
-        this.currentUserId // Use the actual user ID
+        this.currentUserId, // Use the actual user ID
+        this.currentUsername // Add username to message
       );
 
       if (error) {
@@ -294,6 +297,30 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   isOwnMessage(message: Message): boolean {
     return message.user_id === this.currentUserId;
+  }
+
+  // Get username for display
+  getMessageUsername(message: Message): string {
+    if (message.username) {
+      return message.username;
+    }
+    // Fallback: if no username, show "Người dùng" + first 4 chars of user_id
+    return message.user_id ? `Người dùng ${message.user_id.substring(0, 4)}` : 'Ẩn danh';
+  }
+
+  // Get user color for message
+  getUserColor(userId: string): string {
+    return this.userColorService.getUserColor(userId);
+  }
+
+  // Get user color light for background
+  getUserColorLight(userId: string): string {
+    return this.userColorService.getUserColorLight(userId);
+  }
+
+  // Get user color dark for border
+  getUserColorDark(userId: string): string {
+    return this.userColorService.getUserColorDark(userId);
   }
 
   canSendMessage(): boolean {
