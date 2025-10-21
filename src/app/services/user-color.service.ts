@@ -1,58 +1,101 @@
 import { Injectable } from '@angular/core';
+import { ThemeService } from './theme.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserColorService {
   private userColors: Map<string, string> = new Map();
-  private colorPalette: string[] = [
-    '#8b5cf6', // Purple
-    '#06b6d4', // Cyan
-    '#10b981', // Emerald
-    '#f59e0b', // Amber
-    '#ef4444', // Red
-    '#3b82f6', // Blue
-    '#84cc16', // Lime
-    '#f97316', // Orange
-    '#ec4899', // Pink
-    '#6366f1', // Indigo
-    '#14b8a6', // Teal
-    '#a855f7'  // Violet
+  
+  // Dark mode colors - lighter shades for contrast on dark background
+  private darkModeColors: string[] = [
+    '#ffffff', // Pure white
+    '#f8fafc', // Slate 50
+    '#e2e8f0', // Slate 200
+    '#cbd5e1', // Slate 300
+    '#94a3b8', // Slate 400
+    '#64748b', // Slate 500
+    '#f1f5f9', // Slate 100
+    '#d1d5db', // Gray 300
+    '#e5e7eb', // Gray 200
+    '#f3f4f6', // Gray 100
+    '#f9fafb', // Gray 50
+    '#ffffff'  // Pure white (duplicate for more users)
+  ];
+  
+  // Light mode colors - darker shades for contrast on light background
+  private lightModeColors: string[] = [
+    '#1f2937', // Gray 800
+    '#374151', // Gray 700
+    '#4b5563', // Gray 600
+    '#6b7280', // Gray 500
+    '#9ca3af', // Gray 400
+    '#111827', // Gray 900
+    '#1e293b', // Slate 800
+    '#334155', // Slate 700
+    '#475569', // Slate 600
+    '#0f172a', // Slate 900
+    '#1a202c', // Custom dark
+    '#2d3748'  // Custom darker
   ];
 
-  constructor() {}
+  constructor(private themeService: ThemeService) {}
 
-  // Get or assign a color for a user
+  // Get current color palette based on theme
+  private getCurrentColorPalette(): string[] {
+    return this.themeService.isDark() ? this.darkModeColors : this.lightModeColors;
+  }
+
+  // Get or assign a color for a user with theme-aware distribution
   getUserColor(userId: string): string {
     if (!this.userColors.has(userId)) {
-      // Assign a color based on user ID hash
+      // Assign a color based on user ID hash with theme-aware distribution
       const hash = this.hashString(userId);
-      const colorIndex = hash % this.colorPalette.length;
-      this.userColors.set(userId, this.colorPalette[colorIndex]);
+      const colorPalette = this.getCurrentColorPalette();
+      const colorIndex = hash % colorPalette.length;
+      this.userColors.set(userId, colorPalette[colorIndex]);
+      
+      // Debug log to track color assignment
+      const theme = this.themeService.isDark() ? 'dark' : 'light';
+      console.log(`🎨 Assigned ${theme} color ${colorPalette[colorIndex]} to user ${userId.substring(0, 8)}...`);
     }
     return this.userColors.get(userId)!;
   }
 
-  // Get a lighter version of the color for backgrounds
+  // Get a lighter version of the color for backgrounds with monochrome optimization
   getUserColorLight(userId: string): string {
     const color = this.getUserColor(userId);
-    return this.lightenColor(color, 0.2);
+    // For monochrome colors, ensure good contrast
+    const lightColor = this.lightenColor(color, 0.3);
+    return lightColor;
   }
 
-  // Get a darker version of the color for borders
+  // Get a darker version of the color for borders with monochrome optimization
   getUserColorDark(userId: string): string {
     const color = this.getUserColor(userId);
-    return this.darkenColor(color, 0.3);
+    // For monochrome colors, ensure good contrast
+    const darkColor = this.darkenColor(color, 0.4);
+    return darkColor;
   }
 
-  // Generate a consistent hash from string
+  // Generate a consistent hash from string with better distribution
   private hashString(str: string): number {
     let hash = 0;
+    if (str.length === 0) return hash;
+    
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
+    
+    // Add additional mixing for better distribution
+    hash = hash ^ (hash >>> 16);
+    hash = hash * 0x85ebca6b;
+    hash = hash ^ (hash >>> 13);
+    hash = hash * 0xc2b2ae35;
+    hash = hash ^ (hash >>> 16);
+    
     return Math.abs(hash);
   }
 
@@ -83,10 +126,38 @@ export class UserColorService {
   // Clear all user colors (useful for testing)
   clearUserColors(): void {
     this.userColors.clear();
+    console.log('🧹 Cleared all user colors');
+  }
+
+  // Refresh colors when theme changes
+  refreshColorsForThemeChange(): void {
+    const currentUsers = Array.from(this.userColors.keys());
+    this.userColors.clear();
+    
+    // Reassign colors with new theme palette
+    currentUsers.forEach(userId => {
+      this.getUserColor(userId);
+    });
+    
+    console.log(`🔄 Refreshed colors for ${currentUsers.length} users with ${this.themeService.isDark() ? 'dark' : 'light'} theme`);
   }
 
   // Get all assigned colors
   getAllUserColors(): Map<string, string> {
     return new Map(this.userColors);
+  }
+
+  // Get color statistics for debugging
+  getColorStats(): { totalUsers: number; colorDistribution: Record<string, number> } {
+    const distribution: Record<string, number> = {};
+    
+    for (const [userId, color] of this.userColors) {
+      distribution[color] = (distribution[color] || 0) + 1;
+    }
+    
+    return {
+      totalUsers: this.userColors.size,
+      colorDistribution: distribution
+    };
   }
 }

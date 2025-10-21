@@ -1,58 +1,48 @@
 <div class="chat-room-container">
   <!-- Header -->
   <div class="chat-header">
-    <div class="header-left">
+    <div class="header-main">
+      <div class="header-left">
+        <button 
+          (click)="goBack()" 
+          class="back-button"
+          appSoundClick
+          soundType="button">
+          <span class="back-icon">←</span>
+          <span class="back-text">Quay lại</span>
+        </button>
+      </div>
+      <div class="header-center">
+        <div class="room-logo-container">
+          <h1 class="room-title">{{ room?.name || 'Đang tải...' }}</h1>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Header Controls Row -->
+    <div class="header-controls">
       <button 
-        (click)="goBack()" 
-        class="back-button"
+        class="theme-toggle"
+        (click)="toggleTheme()"
+        [title]="isDark ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode'"
+        [attr.data-tooltip]="isDark ? 'Light Mode' : 'Dark Mode'"
         appSoundClick
         soundType="button">
-        <span class="back-icon">←</span>
-        <span class="back-text">Quay lại</span>
+        <span class="theme-icon">{{ isDark ? '☀' : '○' }}</span>
+        <span class="theme-label">{{ isDark ? 'Light' : 'Dark' }}</span>
+      </button>
+      <button 
+        class="visibility-toggle"
+        [class.active]="roomVisibilityToggle"
+        (click)="toggleRoomVisibility()"
+        [title]="!roomVisibilityToggle ? 'Đang ẩn' : 'Đang công khai'"
+        [attr.data-tooltip]="!roomVisibilityToggle ? 'Ẩn phòng' : 'Công khai'"
+        appSoundClick
+        soundType="toggle">
+        <span class="visibility-icon">{{ !roomVisibilityToggle ? '●' : '○' }}</span>
+        <span class="visibility-label">{{ !roomVisibilityToggle ? 'Ẩn Phòng' : 'Công Khai' }}</span>
       </button>
     </div>
-    <div class="header-center">
-      <div class="room-logo-container">
-        <h1 class="room-title">{{ room?.name || 'Đang tải...' }}</h1>
-      </div>
-      <div class="room-status">
-        <div class="cleanup-notice">
-          <!-- <span class="status-dot"></span> -->
-          <span class="cleanup-text">Tự động xóa lúc 00:00</span>
-        </div>
-        
-        <!-- Encryption Status -->
-        <div class="encryption-status" *ngIf="encryptionService.isEncryptionAvailable()">
-          <!-- <span class="status-dot"></span> -->
-          <span class="encryption-text">End-to-End Encrypted</span>
-        </div>
-      </div>
-    </div>
-          <div class="header-right">
-            <button 
-              class="theme-toggle"
-              (click)="toggleTheme()"
-              [title]="isDark ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode'"
-              appSoundClick
-              soundType="button">
-              <span class="theme-icon">{{ isDark ? '☀' : '○' }}</span>
-              <span class="theme-label">{{ isDark ? 'Light' : 'Dark' }}</span>
-            </button>
-            <label class="modern-toggle-switch" [title]="!roomVisibilityToggle ? 'Đang ẩn' : 'Đang công khai'">
-              <input 
-                type="checkbox" 
-                [checked]="!roomVisibilityToggle"
-                (change)="toggleRoomVisibility()"
-                aria-label="Bật/tắt hiển thị công khai"
-                appSoundClick
-                soundType="toggle"
-              />
-              <span class="toggle-track">
-                <span class="toggle-text">{{ !roomVisibilityToggle ? 'ẨN' : '' }}</span>
-                <span class="toggle-thumb"></span>
-              </span>
-            </label>
-           </div>
   </div>
 
   <!-- Countdown Timer -->

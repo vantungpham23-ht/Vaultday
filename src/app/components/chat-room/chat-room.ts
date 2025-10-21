@@ -364,5 +364,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+    // Refresh user colors when theme changes
+    this.userColorService.refreshColorsForThemeChange();
+  }
+
+  // Get color statistics for debugging
+  getColorStats(): void {
+    const stats = this.userColorService.getColorStats();
+    console.log('🎨 Color Statistics:', stats);
+    
+    // Log all current users and their colors
+    const allColors = this.userColorService.getAllUserColors();
+    console.log('👥 All Users and Colors:', Array.from(allColors.entries()));
   }
 }
