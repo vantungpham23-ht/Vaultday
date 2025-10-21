@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS messages (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   content TEXT NOT NULL,
   room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
-  user_id TEXT
+  user_id TEXT,
+  username VARCHAR(255)
 );
 
 -- Create function to delete old messages
