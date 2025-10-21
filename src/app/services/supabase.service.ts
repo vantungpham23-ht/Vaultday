@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { supabase } from '../core/supabase.client';
 
 export interface Room {
   id: string;
@@ -14,21 +14,14 @@ export interface Room {
   providedIn: 'root'
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
-
-  constructor() {
-    this.supabase = createClient(
-      environment.supabase.url,
-      environment.supabase.anonKey
-    );
-  }
+  constructor() {}
 
   get client(): SupabaseClient {
-    return this.supabase;
+    return supabase;
   }
 
   async createRoom(name: string, password?: string): Promise<{ data: Room | null; error: any }> {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.client
       .from('rooms')
       .insert([
         {
@@ -43,7 +36,7 @@ export class SupabaseService {
   }
 
   async getPublicRooms(): Promise<{ data: Room[] | null; error: any }> {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.client
       .from('rooms')
       .select('*')
       .is('password', null)
@@ -53,7 +46,7 @@ export class SupabaseService {
   }
 
   async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.client
       .from('rooms')
       .select('*')
       .eq('id', id)
