@@ -496,6 +496,7 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-tertiary);
+  min-height: 0; /* Important for flex child to shrink */
 }
 
 /* Messages Container */
@@ -506,6 +507,8 @@
   padding: var(--space-md);
   overflow-y: auto;
   scroll-behavior: smooth;
+  min-height: 0; /* Important for flex child to shrink */
+  max-height: calc(100vh - 200px); /* Reserve space for header, countdown, and input */
 }
 
 .empty-messages {
@@ -542,16 +545,44 @@
 
 .message-item {
   display: flex;
-  justify-content: flex-start;
   animation: fadeIn 0.3s ease-out;
+
+  &.own-message {
+    justify-content: flex-end;
+    
+    .message-content {
+      background: var(--neon-primary);
+      color: var(--bg-primary);
+      border-color: var(--neon-primary);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+    }
+    
+    .message-meta {
+      text-align: right;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  &.other-message {
+    justify-content: flex-start;
+    
+    .message-content {
+      background: var(--bg-card);
+      color: white;
+      border-color: var(--border-neon);
+    }
+    
+    .message-meta {
+      text-align: left;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
 
   .message-content {
     max-width: 80%;
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-lg);
-    background: var(--bg-card);
-    border: 1px solid var(--border-neon);
-    color: var(--text-primary);
+    border: 1px solid;
     box-shadow: var(--neon-glow-sm);
   }
 
@@ -563,8 +594,6 @@
 
   .message-meta {
     font-size: var(--font-size-xs);
-    color: var(--text-tertiary);
-    text-align: right;
   }
 }
 
@@ -573,6 +602,10 @@
   padding: var(--space-md);
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-neon);
+  flex-shrink: 0; /* Prevent shrinking */
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .message-form {
@@ -639,8 +672,22 @@
       box-shadow: var(--neon-glow-md);
     }
 
+    &:disabled {
+      background: var(--bg-tertiary);
+      border-color: var(--border-muted);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     .send-icon {
       font-size: var(--font-size-lg);
+    }
+
+    .cooldown-text {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-muted);
     }
   }
 }
@@ -747,6 +794,12 @@
 
   .message-input-container {
     padding: var(--space-sm);
+    position: sticky;
+    bottom: 0;
+  }
+
+  .messages-container {
+    max-height: calc(100vh - 180px); /* Adjust for mobile header */
   }
 
   .modal-content {

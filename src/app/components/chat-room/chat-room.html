@@ -156,6 +156,7 @@
                 class="form-input"
                 placeholder="Nhập tên của bạn..."
                 [class.error]="username?.invalid && username?.touched"
+                [value]="currentUsername || ''"
               />
               <div *ngIf="username?.invalid && username?.touched" class="error-message">
                 <span *ngIf="username?.errors?.['required']">Tên là bắt buộc</span>
@@ -196,7 +197,10 @@
 
       <!-- Messages List -->
       <div class="messages-list" *ngIf="messages.length > 0">
-        <div *ngFor="let message of messages; trackBy: trackByMessageId" class="message-item">
+        <div *ngFor="let message of messages; trackBy: trackByMessageId" 
+             class="message-item" 
+             [class.own-message]="isOwnMessage(message)"
+             [class.other-message]="!isOwnMessage(message)">
           <div class="message-content">
             <div class="message-text">{{ message.decryptedContent || message.content }}</div>
             <div class="message-meta">
@@ -223,9 +227,11 @@
           <button
             type="submit"
             class="send-button"
-            [disabled]="messageForm.invalid"
+            [disabled]="messageForm.invalid || !canSendMessage()"
+            [title]="!canSendMessage() ? 'Vui lòng đợi ' + getRemainingCooldown() + ' giây' : 'Gửi tin nhắn'"
           >
-            <span class="send-icon">📤</span>
+            <span class="send-icon" *ngIf="canSendMessage()">📤</span>
+            <span class="cooldown-text" *ngIf="!canSendMessage()">{{ getRemainingCooldown() }}</span>
           </button>
         </div>
         <div *ngIf="content?.invalid && content?.touched" class="error-message">

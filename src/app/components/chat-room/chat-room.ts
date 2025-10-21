@@ -7,6 +7,7 @@ import { DatabaseService, Room } from '../../services/database.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
 import { EncryptionService } from '../../services/encryption.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -22,6 +23,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   usernameForm: FormGroup;
   passwordForm: FormGroup;
   currentUsername: string = '';
+  currentUserId: string = '';
   isLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -29,6 +31,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   isPasswordRequired = false;
   showRoomSettings = false;
   roomVisibilityToggle = false;
+  lastMessageTime = 0;
+  rateLimitSeconds = 5;
+  private cooldownInterval: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,14 +42,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private chatService: ChatService,
     private databaseService: DatabaseService,
     private seoService: SeoService,
-    public encryptionService: EncryptionService
+    public encryptionService: EncryptionService,
+    private storageService: StorageService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
     });
 
+    // Try to load cached username for form initialization
+    const cachedUsername = this.storageService.getUsername();
     this.usernameForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(1)]]
+      username: [cachedUsername || '', [Validators.required, Validators.minLength(1)]]
     });
 
     this.passwordForm = this.fb.group({
@@ -59,6 +67,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']);
       return;
     }
+
+    // Try to load cached username and user ID
+    this.loadCachedUserData();
 
     // Fetch room details
     await this.loadRoomDetails();
@@ -82,6 +93,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.roomId) {
       this.chatService.unsubscribeFromRoom(this.roomId);
+    }
+    if (this.cooldownInterval) {
+      clearInterval(this.cooldownInterval);
+    }
+  }
+
+  loadCachedUserData(): void {
+    const cachedUsername = this.storageService.getUsername();
+    const cachedUserId = this.storageService.getUserId();
+    
+    if (cachedUsername && cachedUserId) {
+      this.currentUsername = cachedUsername;
+      this.currentUserId = cachedUserId;
+      console.log('✅ Loaded cached user data:', { username: cachedUsername, userId: cachedUserId });
     }
   }
 
@@ -151,6 +176,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   setUsername() {
     if (this.usernameForm.valid) {
       this.currentUsername = this.usernameForm.value.username;
+      // Generate a unique user ID for this session
+      this.currentUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Save to cache
+      this.storageService.saveUsername(this.currentUsername);
+      this.storageService.saveUserId(this.currentUserId);
+      
+      console.log('✅ Saved user data to cache:', { username: this.currentUsername, userId: this.currentUserId });
     }
   }
 
@@ -164,13 +197,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async sendMessage() {
-    if (this.messageForm.valid && this.roomId && this.currentUsername) {
+    if (this.messageForm.valid && this.roomId && this.currentUsername && this.currentUserId) {
+      // Check rate limit
+      if (!this.canSendMessage()) {
+        const remaining = this.getRemainingCooldown();
+        this.errorMessage = `Vui lòng đợi ${remaining} giây trước khi gửi tin nhắn tiếp theo`;
+        return;
+      }
+
       const { content } = this.messageForm.value;
       
       const { error } = await this.chatService.sendMessage(
         this.roomId,
-        `${this.currentUsername}: ${content}`,
-        'anonymous'
+        content, // Send just the content, not with username prefix
+        this.currentUserId // Use the actual user ID
       );
 
       if (error) {
@@ -179,6 +219,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       } else {
         this.messageForm.reset();
         this.errorMessage = '';
+        this.lastMessageTime = Date.now(); // Update last message time
+        this.startCooldownTimer();
       }
     }
   }
@@ -226,5 +268,35 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   trackByMessageId(index: number, message: Message): string {
     return message.id;
+  }
+
+  isOwnMessage(message: Message): boolean {
+    return message.user_id === this.currentUserId;
+  }
+
+  canSendMessage(): boolean {
+    const now = Date.now();
+    const timeSinceLastMessage = now - this.lastMessageTime;
+    return timeSinceLastMessage >= (this.rateLimitSeconds * 1000);
+  }
+
+  getRemainingCooldown(): number {
+    const now = Date.now();
+    const timeSinceLastMessage = now - this.lastMessageTime;
+    const remaining = (this.rateLimitSeconds * 1000) - timeSinceLastMessage;
+    return Math.max(0, Math.ceil(remaining / 1000));
+  }
+
+  startCooldownTimer(): void {
+    if (this.cooldownInterval) {
+      clearInterval(this.cooldownInterval);
+    }
+    
+    this.cooldownInterval = setInterval(() => {
+      if (this.canSendMessage()) {
+        clearInterval(this.cooldownInterval);
+        this.cooldownInterval = null;
+      }
+    }, 1000); // Update every second
   }
 }
