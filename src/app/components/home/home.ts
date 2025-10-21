@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SupabaseService, Room } from '../../services/supabase.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
-import { testDbQuery, testDbQueryPost } from '../../services/test-db.service';
+import { testDbQuery, testDbQueryPost, testDbConnection } from '../../services/test-db.service';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
     private supabaseService: SupabaseService
   ) {
     this.joinRoomForm = this.fb.group({
-      roomId: ['', [Validators.required, Validators.minLength(1)]]
+      roomId: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
     });
   }
 
@@ -40,57 +40,54 @@ export class HomeComponent implements OnInit {
     console.log('Testing Netlify function...');
     testDbQuery();
     testDbQueryPost();
+    testDbConnection();
   }
 
-  onJoinRoom() {
+  async onJoinRoom() {
     if (this.joinRoomForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+
       const { roomId } = this.joinRoomForm.value;
-      this.currentRoom = { id: roomId, name: 'Unknown Room', created_at: new Date().toISOString(), password: null, created_by: null };
-      this.router.navigate(['/room', roomId]);
-    }
-  }
-
-  async onCreateAndJoinRoom() {
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    try {
-      // Tạo mã phòng ngẫu nhiên (6 ký tự)
-      const roomCode = this.generateRoomCode();
       
-      // Tạo phòng với mã code làm tên
-      const { data, error } = await this.supabaseService.createRoom(`Room-${roomCode}`);
-
-      if (error) {
-        console.error('Error creating room:', error);
-        this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
-      } else if (data) {
-        this.generatedRoomCode = roomCode;
-        this.successMessage = 'Phòng đã được tạo thành công!';
-        this.currentRoom = data;
+      try {
+        // Kiểm tra xem phòng có tồn tại không
+        const { data: existingRoom, error } = await this.supabaseService.getRoomById(roomId);
         
-        // Tự động chuyển vào phòng chat
-        setTimeout(() => {
-          this.router.navigate(['/room', data.id]);
-        }, 1500);
+        if (error || !existingRoom) {
+          // Phòng không tồn tại, tạo phòng mới với mã code này
+          const { data: newRoom, error: createError } = await this.supabaseService.createRoom(`Room-${roomId}`);
+          
+          if (createError || !newRoom) {
+            console.error('Error creating room:', createError);
+            this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
+            this.isLoading = false;
+            return;
+          }
+          
+          this.successMessage = 'Phòng mới đã được tạo với mã này!';
+          this.generatedRoomCode = roomId;
+          this.currentRoom = newRoom;
+          
+          // Tự động chuyển vào phòng chat
+          setTimeout(() => {
+            this.router.navigate(['/room', newRoom.id]);
+          }, 1500);
+        } else {
+          // Phòng đã tồn tại, vào phòng đó
+          this.currentRoom = existingRoom;
+          this.router.navigate(['/room', roomId]);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại.';
       }
-    } catch (error) {
-      console.error('Error:', error);
-      this.errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại.';
+      
+      this.isLoading = false;
     }
-    
-    this.isLoading = false;
   }
 
-  private generateRoomCode(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
 
   async loadPublicRooms() {
     this.isLoadingRooms = true;

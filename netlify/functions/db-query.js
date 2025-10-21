@@ -57,6 +57,9 @@ exports.handler = async (event, context) => {
       query = body.query;
       params = body.params || [];
 
+      console.log('Query:', query);
+      console.log('Params:', params);
+
       if (!query) {
         return {
           statusCode: 400,
@@ -89,6 +92,8 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Database query error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     
     return {
       statusCode: 500,
@@ -98,7 +103,8 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({ 
         ok: false, 
-        error: error.message 
+        error: error.message,
+        details: error.stack
       })
     };
   } finally {

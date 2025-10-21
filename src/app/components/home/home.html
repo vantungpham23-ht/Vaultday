@@ -47,15 +47,7 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons">
-    <button 
-      class="btn-primary btn-lg" 
-      (click)="onCreateAndJoinRoom()"
-      [disabled]="isLoading"
-    >
-      <span *ngIf="!isLoading">Tạo Phòng Mới</span>
-      <span *ngIf="isLoading">Đang tạo...</span>
-    </button>
-    <button class="btn-secondary btn-lg" (click)="showJoinRoom = !showJoinRoom">
+    <button class="btn-primary btn-lg" (click)="showJoinRoom = !showJoinRoom">
       Tham Gia Phòng
     </button>
   </div>
@@ -70,20 +62,22 @@
             type="text"
             formControlName="roomId"
             class="form-input"
-            placeholder="Nhập mã phòng..."
+            placeholder="Nhập mã phòng (6 ký tự)..."
             [class.error]="roomId?.invalid && roomId?.touched"
           />
           <div *ngIf="roomId?.invalid && roomId?.touched" class="error-message">
             <span *ngIf="roomId?.errors?.['required']">Mã phòng là bắt buộc</span>
+            <span *ngIf="roomId?.errors?.['minlength'] || roomId?.errors?.['maxlength']">Mã phòng phải có đúng 6 ký tự</span>
           </div>
         </div>
 
         <button
           type="submit"
           class="btn-primary btn-lg w-full"
-          [disabled]="joinRoomForm.invalid"
+          [disabled]="joinRoomForm.invalid || isLoading"
         >
-          Tham Gia
+          <span *ngIf="!isLoading">Tham Gia</span>
+          <span *ngIf="isLoading">Đang xử lý...</span>
         </button>
       </form>
     </div>

@@ -33,8 +33,21 @@ async function testDbQueryPost() {
   }
 }
 
+// Test database connection
+async function testDbConnection() {
+  try {
+    const res = await fetch('/.netlify/functions/test-db', { method: 'GET' });
+    const json = await res.json();
+    console.log('Database connection test:', json);
+    return json;
+  } catch (error) {
+    console.error('Error testing database connection:', error);
+    return null;
+  }
+}
+
 // Export functions for use
-export { testDbQuery, testDbQueryPost };
+export { testDbQuery, testDbQueryPost, testDbConnection };
 
 // Auto-run test if in browser
 if (typeof window !== 'undefined') {
