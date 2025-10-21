@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BackgroundAnimationService } from './services/background-animation.service';
 
 @Component({
   selector: 'app-root',
@@ -8,15 +7,13 @@ import { BackgroundAnimationService } from './services/background-animation.serv
   template: '<router-outlet />'
 })
 export class App implements OnInit, OnDestroy {
-  constructor(private backgroundAnimationService: BackgroundAnimationService) {}
+  constructor() {}
 
   ngOnInit() {
-    // Initialize background animation
-    this.backgroundAnimationService.initializeBackgroundAnimation();
+    // Background animation removed for minimalist design
   }
 
   ngOnDestroy() {
-    // Clean up background animation
-    this.backgroundAnimationService.destroyBackgroundAnimation();
+    // Clean up removed
   }
 }

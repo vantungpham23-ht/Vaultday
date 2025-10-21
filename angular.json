@@ -30,7 +30,7 @@
             "outputPath": "dist/VaultDay/browser/browser",
             "assets": [
               {
-                "glob": "**/*",
+                "glob": "favicon.*",
                 "input": "public"
               }
             ],
@@ -94,7 +94,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               {
-                "glob": "**/*",
+                "glob": "favicon.*",
                 "input": "public"
               }
             ],

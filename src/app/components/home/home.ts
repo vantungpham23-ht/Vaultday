@@ -7,6 +7,7 @@ import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
 import { SoundService } from '../../services/sound.service';
 import { SoundClickDirective } from '../../directives/sound-click.directive';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-home',
@@ -30,7 +31,8 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private databaseService: DatabaseService,
     private seoService: SeoService,
-    private soundService: SoundService
+    private soundService: SoundService,
+    private themeService: ThemeService
   ) {
     this.joinRoomForm = this.fb.group({
       roomId: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
@@ -156,5 +158,14 @@ export class HomeComponent implements OnInit {
 
   trackByRoomId(index: number, room: Room): string {
     return room.id;
+  }
+
+  // Theme methods
+  get isDark(): boolean {
+    return this.themeService.isDark();
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

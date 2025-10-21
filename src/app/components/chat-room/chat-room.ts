@@ -10,6 +10,7 @@ import { EncryptionService } from '../../services/encryption.service';
 import { StorageService } from '../../services/storage.service';
 import { SoundService } from '../../services/sound.service';
 import { SoundClickDirective } from '../../directives/sound-click.directive';
+import { ThemeService } from '../../services/theme.service';
 import { UserColorService } from '../../services/user-color.service';
 
 @Component({
@@ -49,7 +50,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     public encryptionService: EncryptionService,
     private storageService: StorageService,
     private soundService: SoundService,
-    public userColorService: UserColorService
+    public userColorService: UserColorService,
+    private themeService: ThemeService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
@@ -353,5 +355,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     const el = this.messagesContainerRef?.nativeElement;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
+  }
+
+  // Theme methods
+  get isDark(): boolean {
+    return this.themeService.isDark();
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

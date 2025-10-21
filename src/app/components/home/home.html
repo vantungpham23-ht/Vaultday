@@ -3,29 +3,20 @@
   <div class="header-section">
     <div class="header-content">
       <div class="logo-container">
-        <div class="logo-icon">
-          <svg class="logo-svg" viewBox="0 0 32 32" width="48" height="48">
-            <defs>
-              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
-              </linearGradient>
-            </defs>
-            <g fill="none" stroke="url(#logoGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 10c-1 0-2 1-2 2v8c0 1 1 2 2 2h1"/>
-              <path d="M9 12h14c1 0 2 1 2 2v4c0 1-1 2-2 2h-8l-3 3v-3H9c-1 0-2-1-2-2v-4c0-1 1-2 2-2z"/>
-              <path d="M23 10c1 0 2 1 2 2v8c0 1-1 2-2 2h-1"/>
-            </g>
-            <circle cx="14" cy="16" r="1" fill="url(#logoGrad)"/>
-            <circle cx="18" cy="16" r="1" fill="url(#logoGrad)"/>
-          </svg>
-        </div>
-        <h1 class="app-title glow">VaultDay</h1>
+        <h1 class="app-title">VaultDay</h1>
+        <button 
+          class="theme-toggle"
+          (click)="toggleTheme()"
+          [title]="isDark ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode'"
+          appSoundClick
+          soundType="button">
+          <span class="theme-icon">{{ isDark ? '☀' : '○' }}</span>
+          <span class="theme-label">{{ isDark ? 'Light' : 'Dark' }}</span>
+        </button>
       </div>
       <p class="app-subtitle">Vault it today. Gone tomorrow</p>
       <div class="cleanup-info">
         <p class="cleanup-text">
-          <span class="cleanup-icon">🕛</span>
           Tất cả phòng chat sẽ tự động xóa vào lúc 00:00
         </p>
       </div>
@@ -41,7 +32,7 @@
   <div class="public-rooms-section">
     <div class="section-header">
       <h2 class="section-title">
-        <span class="icon">🔥</span>
+        <span class="icon">●</span>
         Phòng Chat Hiện Có
       </h2>
     </div>
@@ -57,7 +48,7 @@
           (click)="loadPublicRooms()"
           appSoundClick
           soundType="button">
-          <span class="refresh-icon">🔄</span>
+          <span class="refresh-icon">↻</span>
           Làm mới
         </button>
       </div>
@@ -72,9 +63,6 @@
             <h3 class="room-name">{{ room.name }}</h3>
             <p class="room-meta">Tạo lúc: {{ room.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
           </div>
-          <div class="room-actions">
-            <span class="room-status">🟢</span>
-          </div>
         </div>
       </div>
       <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="refresh-button">
@@ -83,7 +71,7 @@
           (click)="loadPublicRooms()"
           appSoundClick
           soundType="button">
-          <span class="refresh-icon">🔄</span>
+          <span class="refresh-icon">↻</span>
           Làm mới
         </button>
       </div>
@@ -145,7 +133,7 @@
           (click)="copyRoomCode()"
           appSoundClick
           soundType="button">
-          <span class="copy-icon">📋</span>
+          <span class="copy-icon">●</span>
         </button>
       </div>
       <p class="room-code-hint">Chia sẻ mã này để người khác có thể tham gia phòng</p>
@@ -153,18 +141,14 @@
   </div>
 
   <!-- Room Status -->
-  <div *ngIf="currentRoom" class="room-status">
-    <p class="status-text">Đã tham gia: {{ currentRoom.name }} ({{ currentRoom.id }}) - 1 người</p>
-  </div>
-
   <!-- Messages -->
   <div *ngIf="errorMessage" class="error-toast">
-    <span class="error-icon">⚠️</span>
+    <span class="error-icon">●</span>
     {{ errorMessage }}
   </div>
 
   <div *ngIf="successMessage" class="success-toast">
-    <span class="success-icon">✅</span>
+    <span class="success-icon">●</span>
     {{ successMessage }}
   </div>
 
