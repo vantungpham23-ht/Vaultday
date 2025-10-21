@@ -52,6 +52,8 @@ export class SupabaseService {
 
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
     try {
+      console.log('Making database query:', { query, params });
+      
       const response = await fetch('/.netlify/functions/db-query', {
         method: 'POST',
         headers: {
@@ -63,7 +65,17 @@ export class SupabaseService {
         })
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
       const result = await response.json();
+      console.log('Query result:', result);
       
       if (!result.ok) {
         throw new Error(result.error || 'Database query failed');
