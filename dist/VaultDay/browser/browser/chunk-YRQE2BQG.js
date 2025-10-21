@@ -36682,6 +36682,8 @@ export {
   DecimalPipe,
   CommonModule,
   bootstrapApplication,
+  Meta,
+  Title,
   ActivatedRoute,
   RouterOutlet,
   Router,
@@ -36733,4 +36735,4 @@ export {
    * found in the LICENSE file at https://angular.dev/license
    *)
 */
-//# sourceMappingURL=chunk-Y56WKBWT.js.map
+//# sourceMappingURL=chunk-YRQE2BQG.js.map

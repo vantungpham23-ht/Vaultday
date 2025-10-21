@@ -9,17 +9,17 @@ import {
   ɵsetClassDebugInfo,
   ɵɵdefineComponent,
   ɵɵelement
-} from "./chunk-Y56WKBWT.js";
+} from "./chunk-YRQE2BQG.js";
 
 // src/app/app.routes.ts
 var routes = [
   {
     path: "room/:id",
-    loadComponent: () => import("./chunk-ONAYGFKD.js").then((m) => m.ChatRoomComponent)
+    loadComponent: () => import("./chunk-7J3BQT3Z.js").then((m) => m.ChatRoomComponent)
   },
   {
     path: "",
-    loadComponent: () => import("./chunk-4JOC7524.js").then((m) => m.HomeComponent)
+    loadComponent: () => import("./chunk-WXPF5KCR.js").then((m) => m.HomeComponent)
   }
 ];
 

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ChatService, Message } from '../../services/chat.service';
 import { SupabaseService, Room } from '../../services/supabase.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -30,7 +31,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private chatService: ChatService,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private seoService: SeoService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
@@ -55,6 +57,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     // Fetch room details
     await this.loadRoomDetails();
+    
+    // Update SEO for chat room
+    if (this.room) {
+      this.seoService.setChatRoomSEO(this.room.name);
+    }
 
     // Check if password is required
     if (this.room?.password) {

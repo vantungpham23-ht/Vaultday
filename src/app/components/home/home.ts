@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SupabaseService, Room } from '../../services/supabase.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
-import { testDbQuery, testDbQueryPost, testDbConnection } from '../../services/test-db.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +26,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private seoService: SeoService
   ) {
     this.joinRoomForm = this.fb.group({
       roomId: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
@@ -34,6 +35,9 @@ export class HomeComponent implements OnInit {
   }
 
   async ngOnInit() {
+    // Set SEO for home page
+    this.seoService.setHomePageSEO();
+    
     // Test database connection first
     console.log('Testing Neon database connection...');
     const connectionTest = await this.supabaseService.testConnection();

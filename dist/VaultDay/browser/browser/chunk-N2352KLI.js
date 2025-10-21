@@ -15,6 +15,7 @@ import {
   InjectionToken,
   Injector,
   Input,
+  Meta,
   NgModule,
   Optional,
   Output,
@@ -24,6 +25,7 @@ import {
   SkipSelf,
   Subject,
   Subscription,
+  Title,
   Version,
   __async,
   __spreadProps,
@@ -58,12 +60,13 @@ import {
   ɵɵdomElementEnd,
   ɵɵdomElementStart,
   ɵɵgetInheritedFactory,
+  ɵɵinject,
   ɵɵlistener,
   ɵɵpipe,
   ɵɵpipeBind2,
   ɵɵtext,
   ɵɵtextInterpolate
-} from "./chunk-Y56WKBWT.js";
+} from "./chunk-YRQE2BQG.js";
 
 // node_modules/@angular/forms/fesm2022/forms.mjs
 var BaseControlValueAccessor = class _BaseControlValueAccessor {
@@ -7179,6 +7182,67 @@ var SupabaseService = class _SupabaseService {
   }], () => [], null);
 })();
 
+// src/app/services/seo.service.ts
+var SeoService = class _SeoService {
+  meta;
+  title;
+  constructor(meta, title) {
+    this.meta = meta;
+    this.title = title;
+  }
+  updateTitle(title) {
+    this.title.setTitle(`${title} | VaultDay`);
+  }
+  updateDescription(description) {
+    this.meta.updateTag({ name: "description", content: description });
+    this.meta.updateTag({ property: "og:description", content: description });
+    this.meta.updateTag({ property: "twitter:description", content: description });
+  }
+  updateKeywords(keywords) {
+    this.meta.updateTag({ name: "keywords", content: keywords });
+  }
+  updateOpenGraph(title, description, image) {
+    this.meta.updateTag({ property: "og:title", content: title });
+    this.meta.updateTag({ property: "og:description", content: description });
+    if (image) {
+      this.meta.updateTag({ property: "og:image", content: image });
+    }
+  }
+  updateTwitterCard(title, description, image) {
+    this.meta.updateTag({ property: "twitter:title", content: title });
+    this.meta.updateTag({ property: "twitter:description", content: description });
+    if (image) {
+      this.meta.updateTag({ property: "twitter:image", content: image });
+    }
+  }
+  setHomePageSEO() {
+    this.updateTitle("VaultDay - Vault it today. Gone tomorrow");
+    this.updateDescription("\u1EE8ng d\u1EE5ng chat \u0111\u01A1n gi\u1EA3n v\xE0 hi\u1EC7n \u0111\u1EA1i. Tin nh\u1EAFn t\u1EF1 \u0111\u1ED9ng x\xF3a khi \u0111\u1ED3ng h\u1ED3 \u0111i\u1EC3m 0h. Tham gia ph\xF2ng chat ngay!");
+    this.updateKeywords("chat app, nh\u1EAFn tin, chat room, vaultday, chat online, tin nh\u1EAFn t\u1EF1 \u0111\u1ED9ng x\xF3a");
+    this.updateOpenGraph("VaultDay - Vault it today. Gone tomorrow", "\u1EE8ng d\u1EE5ng chat \u0111\u01A1n gi\u1EA3n v\xE0 hi\u1EC7n \u0111\u1EA1i. Tin nh\u1EAFn t\u1EF1 \u0111\u1ED9ng x\xF3a khi \u0111\u1ED3ng h\u1ED3 \u0111i\u1EC3m 0h.");
+    this.updateTwitterCard("VaultDay - Vault it today. Gone tomorrow", "\u1EE8ng d\u1EE5ng chat \u0111\u01A1n gi\u1EA3n v\xE0 hi\u1EC7n \u0111\u1EA1i. Tin nh\u1EAFn t\u1EF1 \u0111\u1ED9ng x\xF3a khi \u0111\u1ED3ng h\u1ED3 \u0111i\u1EC3m 0h.");
+  }
+  setChatRoomSEO(roomName) {
+    this.updateTitle(`Chat Room: ${roomName}`);
+    this.updateDescription(`Tham gia ph\xF2ng chat ${roomName} tr\xEAn VaultDay. Tin nh\u1EAFn t\u1EF1 \u0111\u1ED9ng x\xF3a khi \u0111\u1ED3ng h\u1ED3 \u0111i\u1EC3m 0h.`);
+    this.updateKeywords(`chat room ${roomName}, nh\u1EAFn tin ${roomName}, vaultday chat`);
+    this.updateOpenGraph(`Chat Room: ${roomName}`, `Tham gia ph\xF2ng chat ${roomName} tr\xEAn VaultDay.`);
+    this.updateTwitterCard(`Chat Room: ${roomName}`, `Tham gia ph\xF2ng chat ${roomName} tr\xEAn VaultDay.`);
+  }
+  static \u0275fac = function SeoService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _SeoService)(\u0275\u0275inject(Meta), \u0275\u0275inject(Title));
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _SeoService, factory: _SeoService.\u0275fac, providedIn: "root" });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(SeoService, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], () => [{ type: Meta }, { type: Title }], null);
+})();
+
 export {
   DefaultValueAccessor,
   Validators,
@@ -7190,7 +7254,8 @@ export {
   FormBuilder,
   ReactiveFormsModule,
   CountdownTimerComponent,
-  SupabaseService
+  SupabaseService,
+  SeoService
 };
 /*! Bundled license information:
 
@@ -7201,4 +7266,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-7RZHLIFN.js.map
+//# sourceMappingURL=chunk-N2352KLI.js.map
