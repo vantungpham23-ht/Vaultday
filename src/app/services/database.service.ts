@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { EnvironmentService } from './environment.service';
+import { MockDatabaseService } from './mock-database.service';
 
 export interface Room {
   id: string;
@@ -13,10 +15,17 @@ export interface Room {
   providedIn: 'root'
 })
 export class DatabaseService {
-  constructor() {}
+  constructor(
+    private environmentService: EnvironmentService,
+    private mockDatabaseService: MockDatabaseService
+  ) {}
 
   // Test database connection
   async testConnection(): Promise<{ ok: boolean; data?: any; error?: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      console.log('🔧 Using mock database service for local development');
+      return this.mockDatabaseService.testConnection();
+    }
     try {
       const response = await fetch('/.netlify/functions/db-pg', {
         method: 'GET',
@@ -52,6 +61,11 @@ export class DatabaseService {
   }
 
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
+    if (this.environmentService.isLocalEnvironment()) {
+      console.log('🔧 Local development: Skipping database query');
+      return [];
+    }
+    
     try {
       console.log('Making database query:', { query, params });
       
@@ -90,6 +104,9 @@ export class DatabaseService {
   }
 
   async createRoom(name: string, password?: string, isPublic: boolean = true): Promise<{ data: Room | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      return this.mockDatabaseService.createRoom(name, password, isPublic);
+    }
     try {
       const query = `
         INSERT INTO rooms (name, password, is_public, created_at)
@@ -106,6 +123,9 @@ export class DatabaseService {
   }
 
   async getRoomByName(name: string): Promise<{ data: Room | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      return this.mockDatabaseService.getRoomByName(name);
+    }
     try {
       const query = `
         SELECT * FROM rooms 
@@ -123,6 +143,9 @@ export class DatabaseService {
   }
 
   async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      return this.mockDatabaseService.getRoomById(id);
+    }
     try {
       const query = `
         SELECT * FROM rooms 
@@ -138,6 +161,9 @@ export class DatabaseService {
   }
 
   async getPublicRooms(): Promise<{ data: Room[] | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      return this.mockDatabaseService.getPublicRooms();
+    }
     try {
       const query = `
         SELECT * FROM rooms 
@@ -153,6 +179,9 @@ export class DatabaseService {
   }
 
   async updateRoomVisibility(roomId: string, isPublic: boolean): Promise<{ data: Room | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      return this.mockDatabaseService.updateRoomVisibility(roomId, isPublic);
+    }
     try {
       const query = `
         UPDATE rooms 

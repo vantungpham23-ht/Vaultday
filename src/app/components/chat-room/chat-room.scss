@@ -425,6 +425,29 @@
         font-weight: 500;
       }
     }
+    
+    .encryption-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-top: var(--space-xs);
+      padding: var(--space-xs) var(--space-sm);
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid var(--neon-accent);
+      border-radius: var(--radius-sm);
+      
+      .encryption-icon {
+        font-size: var(--font-size-xs);
+        animation: pulse 2s infinite;
+      }
+      
+      .encryption-text {
+        font-size: var(--font-size-xs);
+        color: var(--neon-accent);
+        font-weight: 600;
+        text-shadow: 0 0 5px var(--neon-accent);
+      }
+    }
   }
 
          .settings-button {

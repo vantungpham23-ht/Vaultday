@@ -6,6 +6,7 @@ import { ChatService, Message } from '../../services/chat.service';
 import { DatabaseService, Room } from '../../services/database.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
+import { EncryptionService } from '../../services/encryption.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -35,7 +36,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private chatService: ChatService,
     private databaseService: DatabaseService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    public encryptionService: EncryptionService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
@@ -139,6 +141,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   setUsername() {
     if (this.usernameForm.valid) {
       this.currentUsername = this.usernameForm.value.username;
+    }
+  }
+
+  async decryptMessage(message: Message): Promise<string> {
+    try {
+      return await this.chatService.decryptMessage(message, this.roomId!);
+    } catch (error) {
+      console.error('Failed to decrypt message:', error);
+      return message.content;
     }
   }
 

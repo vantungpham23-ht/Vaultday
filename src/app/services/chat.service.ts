@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { EnvironmentService } from './environment.service';
+import { EncryptionService, EncryptedMessage } from './encryption.service';
 
 export interface Message {
   id: string;
@@ -6,6 +8,8 @@ export interface Message {
   content: string;
   room_id: string;
   user_id: string | null;
+  encrypted?: boolean;
+  encryption_data?: EncryptedMessage;
 }
 
 @Injectable({
@@ -14,10 +18,19 @@ export interface Message {
 export class ChatService {
   private messageCallbacks: Map<string, ((message: Message) => void)[]> = new Map();
   private pollingIntervals: Map<string, number> = new Map();
+  private mockMessages: Message[] = [];
 
-  constructor() {}
+  constructor(
+    private environmentService: EnvironmentService,
+    private encryptionService: EncryptionService
+  ) {}
 
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
+    if (this.environmentService.isLocalEnvironment()) {
+      console.log('🔧 Local development: Skipping chat database query');
+      return [];
+    }
+    
     try {
       const response = await fetch('/.netlify/functions/db-pg', {
         method: 'POST',
@@ -43,7 +56,31 @@ export class ChatService {
     }
   }
 
+  async decryptMessage(message: Message, roomId: string): Promise<string> {
+    try {
+      if (!message.encrypted || !message.encryption_data) {
+        return message.content; // Return as-is if not encrypted
+      }
+      
+      const decryptedContent = await this.encryptionService.decryptMessage(
+        message.encryption_data,
+        roomId
+      );
+      
+      console.log('🔓 Message decrypted successfully');
+      return decryptedContent;
+    } catch (error) {
+      console.error('❌ Failed to decrypt message:', error);
+      return `[Encrypted message - decryption failed]`;
+    }
+  }
+
   async fetchMessages(roomId: string): Promise<{ data: Message[] | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      // Return mock messages for local development
+      const mockMessages = this.mockMessages.filter(m => m.room_id === roomId);
+      return { data: mockMessages, error: null };
+    }
     try {
       // Get messages from the last 24 hours
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -63,6 +100,40 @@ export class ChatService {
   }
 
   async sendMessage(roomId: string, content: string, userId: string): Promise<{ data: Message | null; error: any }> {
+    if (this.environmentService.isLocalEnvironment()) {
+      // Create mock message for local development with encryption
+      let encryptedContent = content;
+      let encryptionData: EncryptedMessage | undefined;
+      
+      try {
+        // Encrypt the message
+        encryptionData = await this.encryptionService.encryptMessage(content, roomId);
+        encryptedContent = encryptionData.encryptedData;
+        console.log('🔐 Message encrypted for local development');
+      } catch (error) {
+        console.warn('⚠️ Encryption failed, sending unencrypted message:', error);
+      }
+      
+      const mockMessage: Message = {
+        id: `mock-msg-${Date.now()}`,
+        room_id: roomId,
+        content: encryptedContent,
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        encrypted: encryptionData !== undefined,
+        encryption_data: encryptionData
+      };
+      
+      this.mockMessages.push(mockMessage);
+      
+      // Simulate real-time message delivery
+      setTimeout(() => {
+        const callbacks = this.messageCallbacks.get(roomId) || [];
+        callbacks.forEach(callback => callback(mockMessage));
+      }, 100);
+      
+      return { data: mockMessage, error: null };
+    }
     try {
       const query = `
         INSERT INTO messages (room_id, content, user_id, created_at)

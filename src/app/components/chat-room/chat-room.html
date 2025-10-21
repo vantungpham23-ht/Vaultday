@@ -35,6 +35,12 @@
           <span class="cleanup-icon">🕛</span>
           <span class="cleanup-text">Tự động xóa lúc 00:00</span>
         </div>
+        
+        <!-- Encryption Status -->
+        <div class="encryption-status" *ngIf="encryptionService.isEncryptionAvailable()">
+          <span class="encryption-icon">🔐</span>
+          <span class="encryption-text">End-to-End Encrypted</span>
+        </div>
       </div>
     </div>
            <div class="header-right">

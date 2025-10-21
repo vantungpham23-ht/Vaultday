@@ -147,4 +147,8 @@ export class HomeComponent implements OnInit {
       });
     }
   }
+
+  trackByRoomId(index: number, room: Room): string {
+    return room.id;
+  }
 }

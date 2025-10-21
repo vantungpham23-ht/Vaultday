@@ -37,31 +37,41 @@
     <app-countdown-timer></app-countdown-timer>
   </div>
 
-  <!-- Latest Room Section -->
-  <div class="latest-room-section">
+  <!-- Public Rooms Section -->
+  <div class="public-rooms-section">
     <div class="section-header">
       <h2 class="section-title">
         <span class="icon">🔥</span>
-        Phòng Chat Mới Nhất
+        Phòng Chat Hiện Có
       </h2>
     </div>
-    <div class="latest-room-content">
+    <div class="rooms-list-container">
       <div *ngIf="isLoadingRooms" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Đang tải phòng mới nhất...</p>
+        <p>Đang tải danh sách phòng...</p>
       </div>
       <div *ngIf="!isLoadingRooms && publicRooms.length === 0" class="no-rooms">
-        <p class="error-text">Lỗi khi tải phòng mới nhất</p>
+        <p class="error-text">Chưa có phòng nào</p>
         <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
           <span class="refresh-icon">🔄</span>
           Làm mới
         </button>
       </div>
-      <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="latest-room-info">
-        <div class="room-info">
-          <h3 class="room-name">{{ publicRooms[0].name }}</h3>
-          <p class="room-meta">Tạo lúc: {{ publicRooms[0].created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+      <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="rooms-list">
+        <div 
+          *ngFor="let room of publicRooms; trackBy: trackByRoomId" 
+          class="room-item" 
+          (click)="goToRoom(room.id)">
+          <div class="room-info">
+            <h3 class="room-name">{{ room.name }}</h3>
+            <p class="room-meta">Tạo lúc: {{ room.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+          <div class="room-actions">
+            <span class="room-status">🟢</span>
+          </div>
         </div>
+      </div>
+      <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="refresh-button">
         <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
           <span class="refresh-icon">🔄</span>
           Làm mới
@@ -136,10 +146,5 @@
   <div *ngIf="successMessage" class="success-toast">
     <span class="success-icon">✅</span>
     {{ successMessage }}
-  </div>
-
-  <!-- Version Footer -->
-  <div class="version-footer">
-    <p class="version-text">Version 0.0.1</p>
   </div>
 </div>
