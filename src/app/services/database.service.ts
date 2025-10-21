@@ -18,7 +18,7 @@ export class DatabaseService {
   // Test database connection
   async testConnection(): Promise<{ ok: boolean; data?: any; error?: any }> {
     try {
-      const response = await fetch('/.netlify/functions/test-db-simple', {
+      const response = await fetch('/.netlify/functions/db-pg', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export class DatabaseService {
     try {
       console.log('Making database query:', { query, params });
       
-      const response = await fetch('/.netlify/functions/db-query', {
+      const response = await fetch('/.netlify/functions/db-pg', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
