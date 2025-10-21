@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
       const roomCode = this.generateRoomCode();
       
       // Tạo phòng với mã code làm tên
-      const { data, error } = await this.supabaseService.createRoom(`Room-${roomCode}`, null);
+      const { data, error } = await this.supabaseService.createRoom(`Room-${roomCode}`);
 
       if (error) {
         console.error('Error creating room:', error);
