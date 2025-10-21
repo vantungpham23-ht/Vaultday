@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS rooms (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   name TEXT NOT NULL,
   password TEXT,
-  created_by TEXT
+  created_by TEXT,
+  is_public BOOLEAN DEFAULT TRUE
 );
 
 -- Create messages table
@@ -56,8 +57,11 @@ SELECT delete_old_messages();
 SELECT delete_old_rooms();
 SELECT daily_cleanup();
 
+-- Add is_public column to existing rooms table (if it doesn't exist)
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT TRUE;
+
 -- Insert a test room
-INSERT INTO rooms (name, password) VALUES ('Test Room', NULL) ON CONFLICT DO NOTHING;
+INSERT INTO rooms (name, password, is_public) VALUES ('Test Room', NULL, TRUE) ON CONFLICT DO NOTHING;
 
 -- Verify tables exist
 SELECT 'rooms' as table_name, count(*) as row_count FROM rooms
