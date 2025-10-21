@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChatService, Message } from '../../services/chat.service';
-import { SupabaseService, Room } from '../../services/supabase.service';
+import { DatabaseService, Room } from '../../services/database.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
 
@@ -31,7 +31,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private chatService: ChatService,
-    private supabaseService: SupabaseService,
+    private databaseService: DatabaseService,
     private seoService: SeoService
   ) {
     this.messageForm = this.fb.group({
@@ -83,7 +83,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   async loadRoomDetails() {
     if (!this.roomId) return;
 
-    const { data, error } = await this.supabaseService.getRoomById(this.roomId);
+    const { data, error } = await this.databaseService.getRoomById(this.roomId);
     
     if (error) {
       console.error('Error loading room:', error);

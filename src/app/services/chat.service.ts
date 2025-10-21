@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SupabaseService } from './supabase.service';
 
 export interface Message {
   id: string;
@@ -16,7 +15,7 @@ export class ChatService {
   private messageCallbacks: Map<string, ((message: Message) => void)[]> = new Map();
   private pollingIntervals: Map<string, number> = new Map();
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor() {}
 
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
     try {

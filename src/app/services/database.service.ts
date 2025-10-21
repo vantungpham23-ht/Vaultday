@@ -11,7 +11,7 @@ export interface Room {
 @Injectable({
   providedIn: 'root'
 })
-export class SupabaseService {
+export class DatabaseService {
   constructor() {}
 
   // Test database connection

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { SupabaseService, Room } from '../../services/supabase.service';
+import { DatabaseService, Room } from '../../services/database.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
 
@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private supabaseService: SupabaseService,
+    private databaseService: DatabaseService,
     private seoService: SeoService
   ) {
     this.joinRoomForm = this.fb.group({
@@ -38,18 +38,18 @@ export class HomeComponent implements OnInit {
     // Set SEO for home page
     this.seoService.setHomePageSEO();
     
-    // Test database connection first
-    console.log('Testing Neon database connection...');
-    const connectionTest = await this.supabaseService.testConnection();
-    console.log('Connection test result:', connectionTest);
-    
-    if (connectionTest.ok) {
-      console.log('✅ Database connection successful!');
-      this.loadPublicRooms();
-    } else {
-      console.error('❌ Database connection failed:', connectionTest.error);
-      this.errorMessage = 'Không thể kết nối database. Vui lòng kiểm tra cấu hình.';
-    }
+          // Test database connection first
+          console.log('Testing Neon database connection...');
+          const connectionTest = await this.databaseService.testConnection();
+          console.log('Connection test result:', connectionTest);
+          
+          if (connectionTest.ok) {
+            console.log('✅ Database connection successful!');
+            this.loadPublicRooms();
+          } else {
+            console.error('❌ Database connection failed:', connectionTest.error);
+            this.errorMessage = 'Không thể kết nối database. Vui lòng kiểm tra cấu hình.';
+          }
   }
 
   async onJoinRoom() {
@@ -60,38 +60,38 @@ export class HomeComponent implements OnInit {
 
       const { roomId } = this.joinRoomForm.value;
       
-      try {
-        // Kiểm tra xem phòng có tồn tại không
-        const { data: existingRoom, error } = await this.supabaseService.getRoomById(roomId);
-        
-        if (error || !existingRoom) {
-          // Phòng không tồn tại, tạo phòng mới với mã code này
-          const { data: newRoom, error: createError } = await this.supabaseService.createRoom(`Room-${roomId}`);
-          
-          if (createError || !newRoom) {
-            console.error('Error creating room:', createError);
-            this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
-            this.isLoading = false;
-            return;
-          }
-          
-          this.successMessage = 'Phòng mới đã được tạo với mã này!';
-          this.generatedRoomCode = roomId;
-          this.currentRoom = newRoom;
-          
-          // Tự động chuyển vào phòng chat
-          setTimeout(() => {
-            this.router.navigate(['/room', newRoom.id]);
-          }, 1500);
-        } else {
-          // Phòng đã tồn tại, vào phòng đó
-          this.currentRoom = existingRoom;
-          this.router.navigate(['/room', roomId]);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        this.errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại.';
-      }
+            try {
+              // Kiểm tra xem phòng có tồn tại không
+              const { data: existingRoom, error } = await this.databaseService.getRoomById(roomId);
+              
+              if (error || !existingRoom) {
+                // Phòng không tồn tại, tạo phòng mới với mã code này
+                const { data: newRoom, error: createError } = await this.databaseService.createRoom(`Room-${roomId}`);
+                
+                if (createError || !newRoom) {
+                  console.error('Error creating room:', createError);
+                  this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
+                  this.isLoading = false;
+                  return;
+                }
+                
+                this.successMessage = 'Phòng mới đã được tạo với mã này!';
+                this.generatedRoomCode = roomId;
+                this.currentRoom = newRoom;
+                
+                // Tự động chuyển vào phòng chat
+                setTimeout(() => {
+                  this.router.navigate(['/room', newRoom.id]);
+                }, 1500);
+              } else {
+                // Phòng đã tồn tại, vào phòng đó
+                this.currentRoom = existingRoom;
+                this.router.navigate(['/room', roomId]);
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              this.errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại.';
+            }
       
       this.isLoading = false;
     }
@@ -100,7 +100,7 @@ export class HomeComponent implements OnInit {
 
   async loadPublicRooms() {
     this.isLoadingRooms = true;
-    const { data, error } = await this.supabaseService.getPublicRooms();
+    const { data, error } = await this.databaseService.getPublicRooms();
 
     if (error) {
       console.error('Error loading public rooms:', error);
