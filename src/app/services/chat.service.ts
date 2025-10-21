@@ -19,7 +19,7 @@ export class ChatService {
 
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
     try {
-      const response = await fetch('/.netlify/functions/db-query', {
+      const response = await fetch('/.netlify/functions/db-pg', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

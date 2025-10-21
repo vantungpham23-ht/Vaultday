@@ -1,12 +1,12 @@
 // Test Netlify function
 async function testDbQuery() {
   try {
-    const res = await fetch('/.netlify/functions/db-query', { method: 'GET' });
+    const res = await fetch('/.netlify/functions/db-pg', { method: 'GET' });
     const json = await res.json();
     console.log(json);
     return json;
   } catch (error) {
-    console.error('Error testing db-query:', error);
+    console.error('Error testing db-pg:', error);
     return null;
   }
 }
@@ -14,7 +14,7 @@ async function testDbQuery() {
 // Test with POST request
 async function testDbQueryPost() {
   try {
-    const res = await fetch('/.netlify/functions/db-query', {
+    const res = await fetch('/.netlify/functions/db-pg', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ async function testDbQueryPost() {
     console.log('POST result:', json);
     return json;
   } catch (error) {
-    console.error('Error testing db-query POST:', error);
+    console.error('Error testing db-pg POST:', error);
     return null;
   }
 }
