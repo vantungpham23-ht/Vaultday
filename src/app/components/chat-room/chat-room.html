@@ -2,7 +2,11 @@
   <!-- Header -->
   <div class="chat-header">
     <div class="header-left">
-      <button (click)="goBack()" class="back-button">
+      <button 
+        (click)="goBack()" 
+        class="back-button"
+        appSoundClick
+        soundType="button">
         <span class="back-icon">←</span>
         <span class="back-text">Quay lại</span>
       </button>
@@ -29,8 +33,6 @@
         <h1 class="room-title">{{ room?.name || 'Đang tải...' }}</h1>
       </div>
       <div class="room-status">
-        <span class="status-dot online"></span>
-        <span class="status-text">Đang hoạt động</span>
         <div class="cleanup-notice">
           <span class="cleanup-icon">🕛</span>
           <span class="cleanup-text">Tự động xóa lúc 00:00</span>
@@ -43,14 +45,21 @@
         </div>
       </div>
     </div>
-           <div class="header-right">
-             <button (click)="toggleRoomSettings()" class="settings-button">
-               <span class="settings-icon">⚙️</span>
-             </button>
-             <div class="online-indicator">
-               <span class="indicator-icon">👥</span>
-               <span class="indicator-text">Online</span>
-             </div>
+          <div class="header-right">
+            <label class="modern-toggle-switch" [title]="!roomVisibilityToggle ? 'Đang ẩn' : 'Đang công khai'">
+              <input 
+                type="checkbox" 
+                [checked]="!roomVisibilityToggle"
+                (change)="toggleRoomVisibility()"
+                aria-label="Bật/tắt hiển thị công khai"
+                appSoundClick
+                soundType="toggle"
+              />
+              <span class="toggle-track">
+                <span class="toggle-text">{{ !roomVisibilityToggle ? 'ẨN' : '' }}</span>
+                <span class="toggle-thumb"></span>
+              </span>
+            </label>
            </div>
   </div>
 
@@ -89,6 +98,8 @@
               type="submit"
               class="btn-primary btn-lg w-full"
               [disabled]="passwordForm.invalid"
+              appSoundClick
+              soundType="button"
             >
               Xác nhận
             </button>
@@ -166,6 +177,8 @@
               type="submit"
               class="btn-primary btn-lg w-full"
               [disabled]="usernameForm.invalid"
+              appSoundClick
+              soundType="success"
             >
               Bắt đầu chat
             </button>
@@ -187,7 +200,7 @@
     </div>
 
     <!-- Messages Container -->
-    <div class="messages-container" *ngIf="!isLoading && currentUsername && !isPasswordRequired">
+    <div class="messages-container" *ngIf="!isLoading && currentUsername && !isPasswordRequired" #messagesContainer>
       <!-- Empty State -->
       <div *ngIf="messages.length === 0" class="empty-messages">
         <div class="empty-icon">💬</div>
@@ -229,6 +242,8 @@
             class="send-button"
             [disabled]="messageForm.invalid || !canSendMessage()"
             [title]="!canSendMessage() ? 'Vui lòng đợi ' + getRemainingCooldown() + ' giây' : 'Gửi tin nhắn'"
+            appSoundClick
+            soundType="message"
           >
             <span class="send-icon" *ngIf="canSendMessage()">📤</span>
             <span class="cooldown-text" *ngIf="!canSendMessage()">{{ getRemainingCooldown() }}</span>

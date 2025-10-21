@@ -99,7 +99,9 @@ export class ChatService {
   async fetchMessages(roomId: string): Promise<{ data: Message[] | null; error: any }> {
     if (this.environmentService.isLocalEnvironment()) {
       // Return mock messages for local development
-      const mockMessages = this.mockMessages.filter(m => m.room_id === roomId);
+      const mockMessages = this.mockMessages
+        .filter(m => m.room_id === roomId)
+        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
       return { data: mockMessages, error: null };
     }
     try {

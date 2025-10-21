@@ -52,7 +52,11 @@
       </div>
       <div *ngIf="!isLoadingRooms && publicRooms.length === 0" class="no-rooms">
         <p class="error-text">Chưa có phòng nào</p>
-        <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
+        <button 
+          class="btn-secondary btn-sm" 
+          (click)="loadPublicRooms()"
+          appSoundClick
+          soundType="button">
           <span class="refresh-icon">🔄</span>
           Làm mới
         </button>
@@ -61,7 +65,9 @@
         <div 
           *ngFor="let room of publicRooms; trackBy: trackByRoomId" 
           class="room-item" 
-          (click)="goToRoom(room.id)">
+          (click)="goToRoom(room.id)"
+          appSoundClick
+          soundType="button">
           <div class="room-info">
             <h3 class="room-name">{{ room.name }}</h3>
             <p class="room-meta">Tạo lúc: {{ room.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
@@ -72,7 +78,11 @@
         </div>
       </div>
       <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="refresh-button">
-        <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
+        <button 
+          class="btn-secondary btn-sm" 
+          (click)="loadPublicRooms()"
+          appSoundClick
+          soundType="button">
           <span class="refresh-icon">🔄</span>
           Làm mới
         </button>
@@ -82,7 +92,11 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons">
-    <button class="btn-primary btn-lg" (click)="showJoinRoom = !showJoinRoom">
+    <button 
+      class="btn-primary btn-lg" 
+      (click)="showJoinRoom = !showJoinRoom"
+      appSoundClick
+      soundType="button">
       Tham Gia Phòng
     </button>
   </div>
@@ -110,6 +124,8 @@
           type="submit"
           class="btn-primary btn-lg w-full"
           [disabled]="joinRoomForm.invalid || isLoading"
+          appSoundClick
+          soundType="success"
         >
           <span *ngIf="!isLoading">Tham Gia</span>
           <span *ngIf="isLoading">Đang xử lý...</span>
@@ -124,7 +140,11 @@
       <h3 class="room-code-title">Mã Phòng Của Bạn</h3>
       <div class="room-code-display">
         <span class="room-code">{{ generatedRoomCode }}</span>
-        <button class="copy-btn" (click)="copyRoomCode()">
+        <button 
+          class="copy-btn" 
+          (click)="copyRoomCode()"
+          appSoundClick
+          soundType="button">
           <span class="copy-icon">📋</span>
         </button>
       </div>

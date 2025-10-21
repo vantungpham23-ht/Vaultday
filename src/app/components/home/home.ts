@@ -5,10 +5,12 @@ import { CommonModule } from '@angular/common';
 import { DatabaseService, Room } from '../../services/database.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
+import { SoundService } from '../../services/sound.service';
+import { SoundClickDirective } from '../../directives/sound-click.directive';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent, SoundClickDirective],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -27,7 +29,8 @@ export class HomeComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private databaseService: DatabaseService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    private soundService: SoundService
   ) {
     this.joinRoomForm = this.fb.group({
       roomId: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
@@ -125,6 +128,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToRoom(roomId: string) {
+    this.soundService.playButtonClick();
     this.router.navigate(['/room', roomId]);
   }
 
@@ -136,11 +140,13 @@ export class HomeComponent implements OnInit {
     if (this.generatedRoomCode) {
       navigator.clipboard.writeText(this.generatedRoomCode).then(() => {
         this.successMessage = 'Đã copy mã phòng vào clipboard!';
+        this.soundService.playSuccess();
         setTimeout(() => {
           this.successMessage = '';
         }, 3000);
       }).catch(() => {
         this.errorMessage = 'Không thể copy mã phòng';
+        this.soundService.playError();
         setTimeout(() => {
           this.errorMessage = '';
         }, 3000);

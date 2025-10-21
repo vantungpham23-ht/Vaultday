@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -8,10 +8,12 @@ import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 import { SeoService } from '../../services/seo.service';
 import { EncryptionService } from '../../services/encryption.service';
 import { StorageService } from '../../services/storage.service';
+import { SoundService } from '../../services/sound.service';
+import { SoundClickDirective } from '../../directives/sound-click.directive';
 
 @Component({
   selector: 'app-chat-room',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent, SoundClickDirective],
   templateUrl: './chat-room.html',
   styleUrl: './chat-room.scss'
 })
@@ -34,6 +36,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   lastMessageTime = 0;
   rateLimitSeconds = 5;
   private cooldownInterval: any;
+  @ViewChild('messagesContainer') messagesContainerRef?: ElementRef<HTMLDivElement>;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +46,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private databaseService: DatabaseService,
     private seoService: SeoService,
     public encryptionService: EncryptionService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private soundService: SoundService
   ) {
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]]
@@ -87,6 +91,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       // Load messages and subscribe if no password required
       await this.loadMessages();
       this.subscribeToMessages();
+      // Ensure we see the latest messages when entering room
+      setTimeout(() => this.scrollToBottom(), 100);
     }
   }
 
@@ -138,6 +144,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.messages = await this.chatService.decryptAllMessages(data || [], this.roomId);
     }
     this.isLoading = false;
+    // Ensure we see the latest messages at the bottom
+    setTimeout(() => this.scrollToBottom(), 0);
   }
 
   subscribeToMessages() {
@@ -152,7 +160,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       if (!messageExists) {
         // Decrypt the new message before adding
         const decryptedMessages = await this.chatService.decryptAllMessages([newMessage], this.roomId!);
+        // Append newest at the bottom
         this.messages.push(decryptedMessages[0]);
+        // Auto scroll to bottom on new message
+        setTimeout(() => this.scrollToBottom(), 0);
       }
     });
   }
@@ -166,9 +177,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         this.isPasswordRequired = false;
         await this.loadMessages();
         this.subscribeToMessages();
+        this.soundService.playSuccess();
+        // Scroll to bottom after password verification
+        setTimeout(() => this.scrollToBottom(), 100);
       } else {
         this.errorMessage = 'Mật khẩu không đúng';
         this.passwordForm.reset();
+        this.soundService.playError();
       }
     }
   }
@@ -202,6 +217,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       if (!this.canSendMessage()) {
         const remaining = this.getRemainingCooldown();
         this.errorMessage = `Vui lòng đợi ${remaining} giây trước khi gửi tin nhắn tiếp theo`;
+        this.soundService.playError();
         return;
       }
 
@@ -216,11 +232,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       if (error) {
         console.error('Error sending message:', error);
         this.errorMessage = 'Không thể gửi tin nhắn';
+        this.soundService.playError();
       } else {
         this.messageForm.reset();
         this.errorMessage = '';
         this.lastMessageTime = Date.now(); // Update last message time
         this.startCooldownTimer();
+        this.soundService.playMessageSend();
+        // After sending, scroll to bottom to show the new message
+        setTimeout(() => this.scrollToBottom(), 0);
       }
     }
   }
@@ -242,12 +262,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     if (error) {
       console.error('Error updating room visibility:', error);
       this.errorMessage = 'Không thể cập nhật trạng thái phòng';
+      this.soundService.playError();
     } else {
       this.roomVisibilityToggle = newVisibility;
       if (this.room) {
         this.room.is_public = newVisibility;
       }
       this.successMessage = newVisibility ? 'Phòng đã được công khai' : 'Phòng đã được ẩn';
+      this.soundService.playToggle();
       setTimeout(() => {
         this.successMessage = '';
       }, 3000);
@@ -298,5 +320,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         this.cooldownInterval = null;
       }
     }, 1000); // Update every second
+  }
+
+  private scrollToBottom(): void {
+    const el = this.messagesContainerRef?.nativeElement;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
   }
 }

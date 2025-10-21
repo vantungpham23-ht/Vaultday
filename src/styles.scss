@@ -87,6 +87,169 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Animated Background Icons */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background-image: 
+    /* Floating Icons */
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 20% 80%, rgba(167, 139, 250, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 80% 20%, rgba(196, 181, 253, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 30% 40%, rgba(167, 139, 250, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 70% 60%, rgba(196, 181, 253, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 15% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 85% 30%, rgba(167, 139, 250, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 50% 10%, rgba(196, 181, 253, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.1) 0%, transparent 2%);
+  animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+/* Mouse Follower Icons */
+.mouse-follower {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: 1.5rem;
+  opacity: 0.3;
+  transition: all 0.3s ease-out;
+  animation: orbitGlow 2s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+}
+
+.mouse-follower:nth-child(1) { animation-delay: 0s; }
+.mouse-follower:nth-child(2) { animation-delay: 0.2s; }
+.mouse-follower:nth-child(3) { animation-delay: 0.4s; }
+.mouse-follower:nth-child(4) { animation-delay: 0.6s; }
+.mouse-follower:nth-child(5) { animation-delay: 0.8s; }
+.mouse-follower:nth-child(6) { animation-delay: 1s; }
+.mouse-follower:nth-child(7) { animation-delay: 1.2s; }
+.mouse-follower:nth-child(8) { animation-delay: 1.4s; }
+
+/* Floating Particles */
+.floating-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  width: 4px;
+  height: 4px;
+  background: var(--neon-primary);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: particleFloat 15s linear infinite;
+}
+
+.floating-particle:nth-child(odd) {
+  background: var(--neon-secondary);
+  animation-duration: 20s;
+}
+
+.floating-particle:nth-child(3n) {
+  background: var(--neon-accent);
+  animation-duration: 25s;
+}
+
+/* Background Animations */
+@keyframes backgroundFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateY(-15px) rotate(-1deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes iconFloat {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+@keyframes orbitGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 1);
+    filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.8));
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) translateX(0px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Glow Effects */
+.glow-effect {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.glow-effect:nth-child(2) {
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, transparent 70%);
+  animation-delay: 1s;
+}
+
+.glow-effect:nth-child(3) {
+  background: radial-gradient(circle, rgba(196, 181, 253, 0.06) 0%, transparent 70%);
+  animation-delay: 2s;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.6;
+  }
 }
 
 

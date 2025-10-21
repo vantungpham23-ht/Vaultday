@@ -450,37 +450,94 @@
     }
   }
 
-         .settings-button {
-           background: none;
-           border: none;
-           color: var(--text-secondary);
-           cursor: pointer;
-           padding: var(--space-sm);
-           border-radius: var(--radius-md);
-           transition: all 0.2s ease;
-           margin-right: var(--space-sm);
+        .modern-toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 30px;
+          margin-right: var(--space-sm);
 
-           &:hover {
-             background: rgba(var(--neon-primary), 0.1);
-             color: var(--neon-primary);
-           }
+          input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
 
-           .settings-icon {
-             font-size: var(--font-size-lg);
-           }
-         }
+          .toggle-track {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-neon);
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: var(--neon-glow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
 
-         .online-indicator {
-           display: flex;
-           align-items: center;
-           gap: var(--space-xs);
-           font-size: var(--font-size-xs);
-           color: var(--text-secondary);
+            .toggle-text {
+              font-size: 10px;
+              font-weight: 600;
+              color: var(--text-primary);
+              text-shadow: var(--neon-glow-sm);
+              transition: all 0.3s ease;
+              z-index: 1;
+            }
 
-           .indicator-icon {
-             font-size: var(--font-size-sm);
-           }
-         }
+            .toggle-thumb {
+              position: absolute;
+              height: 24px;
+              width: 24px;
+              left: 3px;
+              bottom: 3px;
+              background-color: var(--bg-primary);
+              border: 1px solid var(--border-neon);
+              border-radius: 50%;
+              transition: all 0.3s ease;
+              box-shadow: var(--neon-glow-sm);
+              z-index: 2;
+            }
+          }
+
+          input:checked + .toggle-track {
+            background-color: var(--neon-primary);
+            border-color: var(--neon-primary);
+            box-shadow: var(--neon-glow-md);
+
+            .toggle-text {
+              color: var(--bg-primary);
+              text-shadow: none;
+            }
+
+            .toggle-thumb {
+              background-color: var(--bg-primary);
+              border-color: var(--neon-primary);
+              box-shadow: var(--neon-glow-sm);
+              transform: translateX(30px);
+            }
+          }
+
+          &:hover .toggle-track {
+            box-shadow: var(--neon-glow-md);
+          }
+
+          input:checked:hover + .toggle-track {
+            box-shadow: var(--neon-glow-lg);
+          }
+        }
+
+        .visibility-label {
+          color: var(--text-secondary);
+          font-size: var(--font-size-xs);
+          margin-right: var(--space-md);
+        }
+
+        .online-indicator { display: none; }
 }
 
 /* Countdown Section */
@@ -509,6 +566,14 @@
   scroll-behavior: smooth;
   min-height: 0; /* Important for flex child to shrink */
   max-height: calc(100vh - 200px); /* Reserve space for header, countdown, and input */
+  
+  /* Hide scrollbar but keep scrolling functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  
+  &::-webkit-scrollbar {
+    display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+  }
 }
 
 .empty-messages {
@@ -540,6 +605,7 @@
 .messages-list {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end; /* stick to bottom */
   gap: var(--space-sm);
 }
 
