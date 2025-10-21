@@ -1,0 +1,137 @@
+<div class="home-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="app-title glow">VaultDay</h1>
+      <p class="app-subtitle">Một ngày trong 'két', rồi xoá.</p>
+    </div>
+  </div>
+
+  <!-- Latest Room Section -->
+  <div class="latest-room-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="icon">🔥</span>
+        Phòng Chat Mới Nhất
+      </h2>
+    </div>
+    <div class="latest-room-content">
+      <div *ngIf="isLoadingRooms" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Đang tải phòng mới nhất...</p>
+      </div>
+      <div *ngIf="!isLoadingRooms && publicRooms.length === 0" class="no-rooms">
+        <p class="error-text">Lỗi khi tải phòng mới nhất</p>
+        <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
+          <span class="refresh-icon">🔄</span>
+          Làm mới
+        </button>
+      </div>
+      <div *ngIf="!isLoadingRooms && publicRooms.length > 0" class="latest-room-info">
+        <div class="room-info">
+          <h3 class="room-name">{{ publicRooms[0].name }}</h3>
+          <p class="room-meta">Tạo lúc: {{ publicRooms[0].created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <button class="btn-secondary btn-sm" (click)="loadPublicRooms()">
+          <span class="refresh-icon">🔄</span>
+          Làm mới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn-secondary btn-lg" (click)="showCreateRoom = !showCreateRoom">
+      Tạo Phòng
+    </button>
+    <button class="btn-primary btn-lg" (click)="showJoinRoom = !showJoinRoom">
+      Duyệt Phòng
+    </button>
+  </div>
+
+  <!-- Create Room Form -->
+  <div *ngIf="showCreateRoom" class="form-section">
+    <div class="form-container">
+      <h3 class="form-title">Tạo Phòng Mới</h3>
+      <form [formGroup]="createRoomForm" (ngSubmit)="onCreateRoom()" class="create-form">
+        <div class="form-group">
+          <input
+            type="text"
+            formControlName="roomName"
+            class="form-input"
+            placeholder="Nhập tên phòng..."
+            [class.error]="roomName?.invalid && roomName?.touched"
+          />
+          <div *ngIf="roomName?.invalid && roomName?.touched" class="error-message">
+            <span *ngIf="roomName?.errors?.['required']">Tên phòng là bắt buộc</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input
+            type="password"
+            formControlName="password"
+            class="form-input"
+            placeholder="Mật khẩu (tùy chọn)..."
+          />
+          <p class="form-hint">Để trống để tạo phòng công khai</p>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-success btn-lg w-full"
+          [disabled]="createRoomForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">Tạo Phòng</span>
+          <span *ngIf="isLoading">Đang tạo...</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Join Room Form -->
+  <div *ngIf="showJoinRoom" class="form-section">
+    <div class="form-container">
+      <h3 class="form-title">Tham Gia Phòng</h3>
+      <form [formGroup]="joinRoomForm" (ngSubmit)="onJoinRoom()" class="join-form">
+        <div class="form-group">
+          <input
+            type="text"
+            formControlName="roomId"
+            class="form-input"
+            placeholder="Nhập mã phòng..."
+            [class.error]="roomId?.invalid && roomId?.touched"
+          />
+          <div *ngIf="roomId?.invalid && roomId?.touched" class="error-message">
+            <span *ngIf="roomId?.errors?.['required']">Mã phòng là bắt buộc</span>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary btn-lg w-full"
+          [disabled]="joinRoomForm.invalid"
+        >
+          Tham Gia
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Room Status -->
+  <div *ngIf="currentRoom" class="room-status">
+    <p class="status-text">Đã tham gia: {{ currentRoom.name }} ({{ currentRoom.id }}) - 1 người</p>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="errorMessage" class="error-toast">
+    <span class="error-icon">⚠️</span>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="success-toast">
+    <span class="success-icon">✅</span>
+    {{ successMessage }}
+  </div>
+</div>

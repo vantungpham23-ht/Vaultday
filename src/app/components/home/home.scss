@@ -1,0 +1,344 @@
+/* Home Component - Dark Neon Theme */
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header-section {
+  text-align: center;
+  padding: var(--space-xl) 0;
+  
+  .header-content {
+    .app-title {
+      font-size: var(--font-size-4xl);
+      font-weight: 800;
+      margin-bottom: var(--space-sm);
+      color: var(--neon-primary);
+      text-shadow: var(--neon-glow-lg);
+    }
+    
+    .app-subtitle {
+      font-size: var(--font-size-lg);
+      color: var(--text-secondary);
+      font-style: italic;
+      opacity: 0.8;
+    }
+  }
+}
+
+/* Latest Room Section */
+.latest-room-section {
+  background: var(--bg-card);
+  border: 2px solid var(--border-neon);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neon-glow-sm);
+  overflow: hidden;
+  
+  .section-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-neon);
+    background: var(--bg-secondary);
+    
+    .section-title {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      
+      .icon {
+        font-size: var(--font-size-lg);
+      }
+    }
+  }
+  
+  .latest-room-content {
+    padding: var(--space-lg);
+    
+    .loading-state {
+      text-align: center;
+      color: var(--text-secondary);
+      
+      .loading-spinner {
+        border: 3px solid var(--border-muted);
+        border-top: 3px solid var(--neon-primary);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: var(--space-md) auto;
+      }
+    }
+    
+    .no-rooms {
+      text-align: center;
+      
+      .error-text {
+        color: var(--error);
+        font-style: italic;
+        margin-bottom: var(--space-md);
+      }
+    }
+    
+    .latest-room-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+      
+      .room-info {
+        flex: 1;
+        
+        .room-name {
+          font-size: var(--font-size-lg);
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: var(--space-xs);
+        }
+        
+        .room-meta {
+          font-size: var(--font-size-sm);
+          color: var(--text-tertiary);
+        }
+      }
+    }
+  }
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: var(--space-md);
+  
+  button {
+    flex: 1;
+    padding: var(--space-lg);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--neon-glow-md);
+    }
+  }
+}
+
+/* Form Sections */
+.form-section {
+  background: var(--bg-card);
+  border: 2px solid var(--border-neon);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neon-glow-sm);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+  
+  .form-container {
+    padding: var(--space-lg);
+    
+    .form-title {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+    
+    .create-form,
+    .join-form {
+      .form-group {
+        margin-bottom: var(--space-lg);
+        
+        .form-input {
+          width: 100%;
+          padding: var(--space-md);
+          border: 2px solid var(--border-neon);
+          border-radius: var(--radius-md);
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          font-family: var(--font-family);
+          transition: all 0.3s ease;
+          box-shadow: var(--neon-glow-sm);
+          
+          &:focus {
+            outline: none;
+            border-color: var(--neon-accent);
+            box-shadow: var(--neon-glow-md);
+            background: var(--bg-tertiary);
+          }
+          
+          &::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+          }
+          
+          &.error {
+            border-color: var(--error);
+            box-shadow: 0 0 10px var(--error);
+          }
+        }
+        
+        .form-hint {
+          font-size: var(--font-size-xs);
+          color: var(--text-tertiary);
+          margin-top: var(--space-xs);
+          font-style: italic;
+        }
+      }
+    }
+  }
+}
+
+/* Room Status */
+.room-status {
+  background: var(--bg-card);
+  border: 2px solid var(--border-neon);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  box-shadow: var(--neon-glow-sm);
+  
+  .status-text {
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+  }
+}
+
+/* Toast Messages */
+.error-toast,
+.success-toast {
+  position: fixed;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neon-glow-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  font-weight: 500;
+  border: 2px solid;
+  
+  .error-icon,
+  .success-icon {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.error-toast {
+  background: var(--bg-card);
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.success-toast {
+  background: var(--bg-card);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .home-container {
+    padding: var(--space-md);
+    gap: var(--space-lg);
+  }
+  
+  .header-section {
+    padding: var(--space-lg) 0;
+    
+    .header-content {
+      .app-title {
+        font-size: var(--font-size-3xl);
+      }
+      
+      .app-subtitle {
+        font-size: var(--font-size-base);
+      }
+    }
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--space-sm);
+    
+    button {
+      padding: var(--space-md);
+      font-size: var(--font-size-base);
+    }
+  }
+  
+  .latest-room-section,
+  .form-section {
+    .section-header,
+    .form-container {
+      padding: var(--space-md);
+    }
+  }
+  
+  .error-toast,
+  .success-toast {
+    width: calc(100% - var(--space-lg) * 2);
+    left: var(--space-lg);
+    right: var(--space-lg);
+    top: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: var(--space-sm);
+    gap: var(--space-md);
+  }
+  
+  .header-section {
+    padding: var(--space-md) 0;
+    
+    .header-content {
+      .app-title {
+        font-size: var(--font-size-2xl);
+      }
+      
+      .app-subtitle {
+        font-size: var(--font-size-sm);
+      }
+    }
+  }
+  
+  .latest-room-section,
+  .form-section {
+    .section-header,
+    .form-container {
+      padding: var(--space-sm);
+    }
+  }
+}

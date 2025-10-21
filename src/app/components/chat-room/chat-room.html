@@ -1,0 +1,160 @@
+<div class="chat-room-container">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-left">
+      <button (click)="goBack()" class="back-button">
+        <span class="back-icon">←</span>
+        <span class="back-text">Quay lại</span>
+      </button>
+    </div>
+    <div class="header-center">
+      <h1 class="room-title">{{ room?.name || 'Đang tải...' }}</h1>
+      <div class="room-status">
+        <span class="status-dot online"></span>
+        <span class="status-text">Đang hoạt động</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="online-indicator">
+        <span class="indicator-icon">👥</span>
+        <span class="indicator-text">Online</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="chat-content">
+    <!-- Password Modal -->
+    <div *ngIf="showPasswordModal" class="password-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <span class="modal-icon">🔒</span>
+            Phòng được bảo vệ
+          </h2>
+          <p class="modal-description">Nhập mật khẩu để vào phòng</p>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="passwordForm" (ngSubmit)="verifyPassword()" class="password-form">
+            <div class="form-group">
+              <input
+                type="password"
+                formControlName="password"
+                class="form-input"
+                placeholder="Nhập mật khẩu..."
+                [class.error]="password?.invalid && password?.touched"
+              />
+              <div *ngIf="password?.invalid && password?.touched" class="error-message">
+                <span *ngIf="password?.errors?.['required']">Mật khẩu là bắt buộc</span>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn-primary btn-lg w-full"
+              [disabled]="passwordForm.invalid"
+            >
+              Xác nhận
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Username Form -->
+    <div *ngIf="!currentUsername && !isPasswordRequired" class="username-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <span class="modal-icon">👋</span>
+            Chào mừng bạn!
+          </h2>
+          <p class="modal-description">Nhập tên để bắt đầu trò chuyện</p>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="usernameForm" (ngSubmit)="setUsername()" class="username-form">
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="username"
+                class="form-input"
+                placeholder="Nhập tên của bạn..."
+                [class.error]="username?.invalid && username?.touched"
+              />
+              <div *ngIf="username?.invalid && username?.touched" class="error-message">
+                <span *ngIf="username?.errors?.['required']">Tên là bắt buộc</span>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn-primary btn-lg w-full"
+              [disabled]="usernameForm.invalid"
+            >
+              Bắt đầu chat
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-banner">
+      <span class="error-icon">⚠️</span>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Đang tải tin nhắn...</p>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="messages-container" *ngIf="!isLoading && currentUsername && !isPasswordRequired">
+      <!-- Empty State -->
+      <div *ngIf="messages.length === 0" class="empty-messages">
+        <div class="empty-icon">💬</div>
+        <h3>Chưa có tin nhắn nào</h3>
+        <p>Hãy là người đầu tiên gửi tin nhắn!</p>
+      </div>
+
+      <!-- Messages List -->
+      <div class="messages-list" *ngIf="messages.length > 0">
+        <div *ngFor="let message of messages; trackBy: trackByMessageId" class="message-item">
+          <div class="message-content">
+            <div class="message-text">{{ message.content }}</div>
+            <div class="message-meta">
+              <span class="message-time">{{ message.created_at | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div class="message-input-container" *ngIf="currentUsername && !isPasswordRequired">
+      <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-form">
+        <div class="input-group">
+          <div class="input-wrapper">
+            <input
+              type="text"
+              formControlName="content"
+              class="message-input"
+              placeholder="Nhập tin nhắn..."
+              [class.error]="content?.invalid && content?.touched"
+            />
+          </div>
+          <button
+            type="submit"
+            class="send-button"
+            [disabled]="messageForm.invalid"
+          >
+            <span class="send-icon">📤</span>
+          </button>
+        </div>
+        <div *ngIf="content?.invalid && content?.touched" class="error-message">
+          <span *ngIf="content?.errors?.['required']">Tin nhắn là bắt buộc</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
