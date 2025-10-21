@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { supabase } from '../core/supabase.client';
 
 export interface Room {
   id: string;
@@ -16,42 +14,75 @@ export interface Room {
 export class SupabaseService {
   constructor() {}
 
-  get client(): SupabaseClient {
-    return supabase;
+  private async queryDatabase(query: string, params: any[] = []): Promise<any> {
+    try {
+      const response = await fetch('/.netlify/functions/db-query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          params
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.ok) {
+        throw new Error(result.error || 'Database query failed');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Database query error:', error);
+      throw error;
+    }
   }
 
   async createRoom(name: string, password?: string): Promise<{ data: Room | null; error: any }> {
-    const { data, error } = await this.client
-      .from('rooms')
-      .insert([
-        {
-          name,
-          password: password || null
-        }
-      ])
-      .select()
-      .single();
-
-    return { data, error };
+    try {
+      const query = `
+        INSERT INTO rooms (name, password, created_at)
+        VALUES ($1, $2, NOW())
+        RETURNING *
+      `;
+      const params = [name, password || null];
+      
+      const result = await this.queryDatabase(query, params);
+      return { data: result[0] || null, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
   }
 
   async getPublicRooms(): Promise<{ data: Room[] | null; error: any }> {
-    const { data, error } = await this.client
-      .from('rooms')
-      .select('*')
-      .is('password', null)
-      .order('created_at', { ascending: false });
-
-    return { data, error };
+    try {
+      const query = `
+        SELECT * FROM rooms 
+        WHERE password IS NULL 
+        ORDER BY created_at DESC
+      `;
+      
+      const result = await this.queryDatabase(query);
+      return { data: result || [], error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
   }
 
   async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
-    const { data, error } = await this.client
-      .from('rooms')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    return { data, error };
+    try {
+      const query = `
+        SELECT * FROM rooms 
+        WHERE id = $1
+      `;
+      const params = [id];
+      
+      const result = await this.queryDatabase(query, params);
+      return { data: result[0] || null, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
   }
 }
