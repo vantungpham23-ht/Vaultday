@@ -229,6 +229,17 @@
     </div>
   </div>
 
+  <!-- Messages -->
+  <div *ngIf="errorMessage" class="error-toast">
+    <span class="error-icon">⚠️</span>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="success-toast">
+    <span class="success-icon">✅</span>
+    {{ successMessage }}
+  </div>
+
   <!-- Version Footer -->
   <div class="version-footer">
     <p class="version-text">Version 0.0.1</p>

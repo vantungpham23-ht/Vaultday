@@ -23,6 +23,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   currentUsername: string = '';
   isLoading = false;
   errorMessage = '';
+  successMessage = '';
   showPasswordModal = false;
   isPasswordRequired = false;
   showRoomSettings = false;

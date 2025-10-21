@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
         
         if (error || !existingRoom) {
           // Phòng không tồn tại, tạo phòng mới với mã code này
-          const { data: newRoom, error: createError } = await this.databaseService.createRoom(`Room-${roomId}`, null, true);
+          const { data: newRoom, error: createError } = await this.databaseService.createRoom(`Room-${roomId}`, undefined, true);
           
           if (createError || !newRoom) {
             console.error('Error creating room:', createError);

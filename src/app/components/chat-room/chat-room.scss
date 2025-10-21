@@ -622,6 +622,43 @@
   }
 }
 
+/* Messages */
+.error-toast,
+.success-toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 2px solid;
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-base);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+  
+  .error-icon,
+  .success-icon {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.error-toast {
+  border-color: var(--error);
+  color: var(--error);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+.success-toast {
+  border-color: var(--success);
+  color: var(--success);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+}
+
 /* Version Footer */
 .version-footer {
   text-align: center;

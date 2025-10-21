@@ -105,6 +105,21 @@ export class DatabaseService {
     }
   }
 
+  async getRoomById(id: string): Promise<{ data: Room | null; error: any }> {
+    try {
+      const query = `
+        SELECT * FROM rooms 
+        WHERE id = $1
+      `;
+      const params = [id];
+      
+      const result = await this.queryDatabase(query, params);
+      return { data: result[0] || null, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  }
+
   async getPublicRooms(): Promise<{ data: Room[] | null; error: any }> {
     try {
       const query = `
