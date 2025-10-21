@@ -1,9 +1,11 @@
-// Test function to check database connection
+// netlify/functions/test-db.js
 const { Pool } = require('@neondatabase/serverless');
 
 exports.handler = async (event, context) => {
+  console.log('=== Database Test Function ===');
+  
   const connectionString = process.env.NEON_DATABASE_URL;
-
+  
   if (!connectionString) {
     return {
       statusCode: 500,
@@ -19,14 +21,16 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const pool = new Pool({ 
-    connectionString,
-    webSocketConstructor: require('ws').WebSocket
-  });
-  
   try {
+    // Try to create pool without WebSocket first
+    const pool = new Pool({ 
+      connectionString
+    });
+
     // Test basic connection
     const { rows } = await pool.query('SELECT now() as server_time, version() as pg_version');
+    
+    await pool.end();
     
     return {
       statusCode: 200,
@@ -34,26 +38,27 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        ok: true, 
+      body: JSON.stringify({
+        ok: true,
+        message: 'Database connection successful!',
         data: rows[0],
-        connectionString: connectionString.substring(0, 20) + '...' // Hide sensitive info
+        connectionString: connectionString.substring(0, 20) + '...'
       })
     };
   } catch (error) {
+    console.error('Database connection error:', error);
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        ok: false, 
+      body: JSON.stringify({
+        ok: false,
         error: error.message,
-        connectionString: connectionString.substring(0, 20) + '...'
+        details: error.stack,
+        connectionString: connectionString ? connectionString.substring(0, 20) + '...' : 'Not set'
       })
     };
-  } finally {
-    await pool.end();
   }
 };

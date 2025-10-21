@@ -38,18 +38,18 @@ export class HomeComponent implements OnInit {
     // Set SEO for home page
     this.seoService.setHomePageSEO();
     
-          // Test database connection first
-          console.log('Testing Neon database connection...');
-          const connectionTest = await this.databaseService.testConnection();
-          console.log('Connection test result:', connectionTest);
-          
-          if (connectionTest.ok) {
-            console.log('✅ Database connection successful!');
-            this.loadPublicRooms();
-          } else {
-            console.error('❌ Database connection failed:', connectionTest.error);
-            this.errorMessage = 'Không thể kết nối database. Vui lòng kiểm tra cấu hình.';
-          }
+    // Test database connection first
+    console.log('Testing Netlify Functions...');
+    const connectionTest = await this.databaseService.testConnection();
+    console.log('Connection test result:', connectionTest);
+    
+    if (connectionTest.ok) {
+      console.log('✅ Netlify Functions working!');
+      this.loadPublicRooms();
+    } else {
+      console.error('❌ Netlify Functions failed:', connectionTest.error);
+      this.errorMessage = 'Không thể kết nối server. Vui lòng thử lại sau.';
+    }
   }
 
   async onJoinRoom() {

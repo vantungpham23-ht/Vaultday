@@ -28,22 +28,68 @@ export class CountdownService {
 
   private async initializeTimezone() {
     try {
-      // Get timezone from IP using a free API
-      const response = await fetch('https://ipapi.co/json/');
-      const data = await response.json();
+      // Check if we have cached timezone data
+      const cachedData = localStorage.getItem('timezone_data');
+      const cacheTime = localStorage.getItem('timezone_cache_time');
       
-      if (data.timezone) {
-        // Convert timezone to offset in minutes
-        const now = new Date();
-        const utc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-        const localTime = new Date(utc.toLocaleString("en-US", { timeZone: data.timezone }));
-        this.timezoneOffset = (localTime.getTime() - utc.getTime()) / 60000;
-        
-        console.log('Timezone detected:', data.timezone, 'Offset:', this.timezoneOffset);
+      if (cachedData && cacheTime) {
+        const cacheAge = Date.now() - parseInt(cacheTime);
+        // Use cache if it's less than 1 hour old
+        if (cacheAge < 60 * 60 * 1000) {
+          const data = JSON.parse(cachedData);
+          this.setTimezoneFromData(data);
+          console.log('Using cached timezone:', data.timezone);
+          return;
+        }
       }
+
+      // Try to get timezone from IP using a free API with fallback
+      let data = null;
+      
+      try {
+        const response = await fetch('https://ipapi.co/json/', {
+          headers: {
+            'User-Agent': 'VaultDay/1.0'
+          }
+        });
+        
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (error) {
+        console.warn('ipapi.co failed, trying fallback:', error);
+      }
+
+      // Fallback to browser timezone if API fails
+      if (!data || !data.timezone) {
+        data = {
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          utc_offset: new Date().getTimezoneOffset() * -1
+        };
+        console.log('Using browser timezone as fallback:', data.timezone);
+      }
+
+      // Cache the result
+      localStorage.setItem('timezone_data', JSON.stringify(data));
+      localStorage.setItem('timezone_cache_time', Date.now().toString());
+      
+      this.setTimezoneFromData(data);
+      
     } catch (error) {
       console.warn('Could not detect timezone, using local time:', error);
       this.timezoneOffset = 0;
+    }
+  }
+
+  private setTimezoneFromData(data: any) {
+    if (data.timezone) {
+      // Convert timezone to offset in minutes
+      const now = new Date();
+      const utc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+      const localTime = new Date(utc.toLocaleString("en-US", { timeZone: data.timezone }));
+      this.timezoneOffset = (localTime.getTime() - utc.getTime()) / 60000;
+      
+      console.log('Timezone detected:', data.timezone, 'Offset:', this.timezoneOffset);
     }
   }
 
