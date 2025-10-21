@@ -14,15 +14,14 @@ import { testDbQuery, testDbQueryPost } from '../../services/test-db.service';
 })
 export class HomeComponent implements OnInit {
   joinRoomForm: FormGroup;
-  createRoomForm: FormGroup;
   isLoading = false;
   errorMessage = '';
   successMessage = '';
   publicRooms: Room[] = [];
   isLoadingRooms = false;
-  showCreateRoom = false;
   showJoinRoom = false;
   currentRoom: Room | null = null;
+  generatedRoomCode: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -31,11 +30,6 @@ export class HomeComponent implements OnInit {
   ) {
     this.joinRoomForm = this.fb.group({
       roomId: ['', [Validators.required, Validators.minLength(1)]]
-    });
-
-    this.createRoomForm = this.fb.group({
-      roomName: ['', [Validators.required, Validators.minLength(1)]],
-      password: ['']
     });
   }
 
@@ -56,26 +50,46 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  async onCreateRoom() {
-    if (this.createRoomForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
+  async onCreateAndJoinRoom() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-      const { roomName, password } = this.createRoomForm.value;
-      const { data, error } = await this.supabaseService.createRoom(roomName, password);
+    try {
+      // Tạo mã phòng ngẫu nhiên (6 ký tự)
+      const roomCode = this.generateRoomCode();
+      
+      // Tạo phòng với mã code làm tên
+      const { data, error } = await this.supabaseService.createRoom(`Room-${roomCode}`, null);
 
       if (error) {
         console.error('Error creating room:', error);
         this.errorMessage = 'Không thể tạo phòng. Vui lòng thử lại.';
       } else if (data) {
+        this.generatedRoomCode = roomCode;
         this.successMessage = 'Phòng đã được tạo thành công!';
-        this.createRoomForm.reset();
-        this.showCreateRoom = false;
-        this.loadPublicRooms(); // Refresh the list
+        this.currentRoom = data;
+        
+        // Tự động chuyển vào phòng chat
+        setTimeout(() => {
+          this.router.navigate(['/room', data.id]);
+        }, 1500);
       }
-      this.isLoading = false;
+    } catch (error) {
+      console.error('Error:', error);
+      this.errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại.';
     }
+    
+    this.isLoading = false;
+  }
+
+  private generateRoomCode(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 
   async loadPublicRooms() {
@@ -99,11 +113,19 @@ export class HomeComponent implements OnInit {
     return this.joinRoomForm.get('roomId');
   }
 
-  get roomName() {
-    return this.createRoomForm.get('roomName');
-  }
-
-  get password() {
-    return this.createRoomForm.get('password');
+  copyRoomCode() {
+    if (this.generatedRoomCode) {
+      navigator.clipboard.writeText(this.generatedRoomCode).then(() => {
+        this.successMessage = 'Đã copy mã phòng vào clipboard!';
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
+      }).catch(() => {
+        this.errorMessage = 'Không thể copy mã phòng';
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
+      });
+    }
   }
 }

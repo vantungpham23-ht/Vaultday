@@ -47,52 +47,17 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons">
-    <button class="btn-secondary btn-lg" (click)="showCreateRoom = !showCreateRoom">
-      Tạo Phòng
+    <button 
+      class="btn-primary btn-lg" 
+      (click)="onCreateAndJoinRoom()"
+      [disabled]="isLoading"
+    >
+      <span *ngIf="!isLoading">Tạo Phòng Mới</span>
+      <span *ngIf="isLoading">Đang tạo...</span>
     </button>
-    <button class="btn-primary btn-lg" (click)="showJoinRoom = !showJoinRoom">
-      Duyệt Phòng
+    <button class="btn-secondary btn-lg" (click)="showJoinRoom = !showJoinRoom">
+      Tham Gia Phòng
     </button>
-  </div>
-
-  <!-- Create Room Form -->
-  <div *ngIf="showCreateRoom" class="form-section">
-    <div class="form-container">
-      <h3 class="form-title">Tạo Phòng Mới</h3>
-      <form [formGroup]="createRoomForm" (ngSubmit)="onCreateRoom()" class="create-form">
-        <div class="form-group">
-          <input
-            type="text"
-            formControlName="roomName"
-            class="form-input"
-            placeholder="Nhập tên phòng..."
-            [class.error]="roomName?.invalid && roomName?.touched"
-          />
-          <div *ngIf="roomName?.invalid && roomName?.touched" class="error-message">
-            <span *ngIf="roomName?.errors?.['required']">Tên phòng là bắt buộc</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <input
-            type="password"
-            formControlName="password"
-            class="form-input"
-            placeholder="Mật khẩu (tùy chọn)..."
-          />
-          <p class="form-hint">Để trống để tạo phòng công khai</p>
-        </div>
-
-        <button
-          type="submit"
-          class="btn-success btn-lg w-full"
-          [disabled]="createRoomForm.invalid || isLoading"
-        >
-          <span *ngIf="!isLoading">Tạo Phòng</span>
-          <span *ngIf="isLoading">Đang tạo...</span>
-        </button>
-      </form>
-    </div>
   </div>
 
   <!-- Join Room Form -->
@@ -121,6 +86,20 @@
           Tham Gia
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Generated Room Code Display -->
+  <div *ngIf="generatedRoomCode" class="room-code-section">
+    <div class="room-code-container">
+      <h3 class="room-code-title">Mã Phòng Của Bạn</h3>
+      <div class="room-code-display">
+        <span class="room-code">{{ generatedRoomCode }}</span>
+        <button class="copy-btn" (click)="copyRoomCode()">
+          <span class="copy-icon">📋</span>
+        </button>
+      </div>
+      <p class="room-code-hint">Chia sẻ mã này để người khác có thể tham gia phòng</p>
     </div>
   </div>
 

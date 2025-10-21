@@ -255,6 +255,79 @@
   border-color: var(--success);
 }
 
+/* Room Code Section */
+.room-code-section {
+  margin: var(--space-lg) 0;
+  
+  .room-code-container {
+    background: var(--bg-card);
+    border: 2px solid var(--neon-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    box-shadow: var(--neon-glow-md);
+    animation: neonPulse 2s ease-in-out infinite;
+    
+    .room-code-title {
+      font-size: var(--font-size-xl);
+      color: var(--neon-primary);
+      margin-bottom: var(--space-lg);
+      text-shadow: var(--neon-glow-sm);
+    }
+    
+    .room-code-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      
+      .room-code {
+        font-size: var(--font-size-3xl);
+        font-weight: 800;
+        color: var(--neon-primary);
+        background: var(--bg-secondary);
+        padding: var(--space-md) var(--space-lg);
+        border: 2px solid var(--neon-primary);
+        border-radius: var(--radius-md);
+        letter-spacing: 0.2em;
+        text-shadow: var(--neon-glow-md);
+        box-shadow: var(--neon-glow-sm);
+        font-family: 'Courier New', monospace;
+      }
+      
+      .copy-btn {
+        background: var(--neon-primary);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        cursor: pointer;
+        font-size: var(--font-size-lg);
+        transition: all 0.3s ease;
+        box-shadow: var(--neon-glow-sm);
+        
+        &:hover {
+          background: var(--neon-secondary);
+          box-shadow: var(--neon-glow-md);
+          transform: scale(1.05);
+        }
+        
+        .copy-icon {
+          display: block;
+        }
+      }
+    }
+    
+    .room-code-hint {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin: 0;
+      font-style: italic;
+    }
+  }
+}
+
 /* Version Footer */
 .version-footer {
   text-align: center;
