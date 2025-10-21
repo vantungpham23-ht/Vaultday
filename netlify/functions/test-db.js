@@ -19,7 +19,10 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({ 
+    connectionString,
+    webSocketConstructor: require('ws').WebSocket
+  });
   
   try {
     // Test basic connection

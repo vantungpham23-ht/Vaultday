@@ -14,6 +14,42 @@ export interface Room {
 export class SupabaseService {
   constructor() {}
 
+  // Test database connection
+  async testConnection(): Promise<{ ok: boolean; data?: any; error?: any }> {
+    try {
+      const response = await fetch('/.netlify/functions/test-neon', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Connection test error:', error);
+      return { ok: false, error: error };
+    }
+  }
+
+  // Run daily cleanup (for testing purposes)
+  async runDailyCleanup(): Promise<{ ok: boolean; data?: any; error?: any }> {
+    try {
+      const response = await fetch('/.netlify/functions/daily-cleanup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Daily cleanup error:', error);
+      return { ok: false, error: error };
+    }
+  }
+
   private async queryDatabase(query: string, params: any[] = []): Promise<any> {
     try {
       const response = await fetch('/.netlify/functions/db-query', {

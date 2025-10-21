@@ -17,12 +17,31 @@
   padding: var(--space-xl) 0;
   
   .header-content {
-    .app-title {
-      font-size: var(--font-size-4xl);
-      font-weight: 800;
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-md);
       margin-bottom: var(--space-sm);
-      color: var(--neon-primary);
-      text-shadow: var(--neon-glow-lg);
+      
+      .logo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        .logo-svg {
+          animation: logoPulse 2s ease-in-out infinite;
+          filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+        }
+      }
+      
+      .app-title {
+        font-size: var(--font-size-4xl);
+        font-weight: 800;
+        margin: 0;
+        color: var(--neon-primary);
+        text-shadow: var(--neon-glow-lg);
+      }
     }
     
     .app-subtitle {
@@ -30,6 +49,31 @@
       color: var(--text-secondary);
       font-style: italic;
       opacity: 0.8;
+      margin-bottom: var(--space-sm);
+    }
+    
+    .cleanup-info {
+      margin-top: var(--space-sm);
+      
+      .cleanup-text {
+        font-size: var(--font-size-sm);
+        color: var(--text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-xs);
+        margin: 0;
+        padding: var(--space-sm) var(--space-md);
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: var(--radius-md);
+        animation: fadeIn 0.5s ease-out;
+        
+        .cleanup-icon {
+          font-size: var(--font-size-base);
+          animation: pulse 2s ease-in-out infinite;
+        }
+      }
     }
   }
 }
@@ -434,5 +478,29 @@
     .form-container {
       padding: var(--space-sm);
     }
+  }
+}
+
+/* Logo Animation */
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+  }
+}
+
+/* Pulse Animation for cleanup icon */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
   }
 }

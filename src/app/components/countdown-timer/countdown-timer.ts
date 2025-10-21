@@ -8,152 +8,202 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule],
   template: `
     <div class="countdown-container">
-      <div class="countdown-header">
-        <span class="countdown-icon">⏰</span>
-        <span class="countdown-title">Đếm ngược đến 0h</span>
-      </div>
       <div class="countdown-display">
         <div class="time-unit">
           <span class="time-value">{{ countdownTime.hours | number:'2.0-0' }}</span>
-          <span class="time-label">Giờ</span>
         </div>
         <div class="time-separator">:</div>
         <div class="time-unit">
           <span class="time-value">{{ countdownTime.minutes | number:'2.0-0' }}</span>
-          <span class="time-label">Phút</span>
         </div>
         <div class="time-separator">:</div>
         <div class="time-unit">
           <span class="time-value">{{ countdownTime.seconds | number:'2.0-0' }}</span>
-          <span class="time-label">Giây</span>
         </div>
-      </div>
-      <div class="countdown-info">
-        <p class="info-text">Tin nhắn sẽ tự động xoá khi đồng hồ điểm 0h</p>
       </div>
     </div>
   `,
   styles: [`
     .countdown-container {
-      background: var(--bg-card);
-      border: 2px solid var(--border-neon);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
+      position: relative;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      border-radius: 20px;
+      padding: 40px 60px;
       text-align: center;
-      box-shadow: var(--neon-glow-sm);
-      animation: neonPulse 3s ease-in-out infinite;
+      overflow: hidden;
+      box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.3),
+        0 0 60px rgba(255, 0, 255, 0.2),
+        0 0 90px rgba(255, 100, 0, 0.1);
+      animation: cosmicGlow 4s ease-in-out infinite;
     }
 
-    .countdown-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
+    .countdown-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+        #00ffff 0%, 
+        #0080ff 25%, 
+        #ff0080 50%, 
+        #ff4000 75%, 
+        #8000ff 100%);
+      border-radius: 22px;
+      z-index: -1;
+      animation: neonRotate 3s linear infinite;
+    }
 
-      .countdown-icon {
-        font-size: var(--font-size-lg);
-        color: var(--neon-primary);
-      }
-
-      .countdown-title {
-        font-size: var(--font-size-sm);
-        font-weight: 600;
-        color: var(--text-primary);
-        text-shadow: var(--neon-glow-sm);
-      }
+    .countdown-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(255, 100, 0, 0.05) 0%, transparent 50%);
+      border-radius: 20px;
+      pointer-events: none;
     }
 
     .countdown-display {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
+      gap: 20px;
+      position: relative;
+      z-index: 1;
 
       .time-unit {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: var(--space-xs);
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 80px;
+        height: 80px;
+        min-width: 80px;
+        min-height: 80px;
+        position: relative;
+        overflow: hidden;
 
         .time-value {
-          font-size: var(--font-size-2xl);
+          font-size: 48px;
           font-weight: 700;
-          color: var(--neon-primary);
-          text-shadow: var(--neon-glow-md);
-          font-family: var(--font-family);
-          min-width: 2ch;
-        }
-
-        .time-label {
-          font-size: var(--font-size-xs);
-          color: var(--text-secondary);
-          font-weight: 500;
+          color: #e0e0e0;
+          text-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.5),
+            0 0 20px rgba(255, 255, 255, 0.3),
+            0 0 30px rgba(255, 255, 255, 0.1);
+          font-family: 'Poppins', monospace;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          line-height: 1;
+          white-space: nowrap;
+          letter-spacing: 2px;
         }
       }
 
       .time-separator {
-        font-size: var(--font-size-2xl);
+        font-size: 48px;
         font-weight: 700;
-        color: var(--neon-primary);
-        text-shadow: var(--neon-glow-sm);
-        margin: 0 var(--space-xs);
+        color: #e0e0e0;
+        text-shadow: 
+          0 0 10px rgba(255, 255, 255, 0.5),
+          0 0 20px rgba(255, 255, 255, 0.3);
+        margin: 0 5px;
+        animation: separatorPulse 2s ease-in-out infinite;
       }
     }
 
-    .countdown-info {
-      .info-text {
-        font-size: var(--font-size-xs);
-        color: var(--text-tertiary);
-        margin: 0;
-        font-style: italic;
-        opacity: 0.8;
-      }
-    }
-
-    @keyframes neonPulse {
+    @keyframes cosmicGlow {
       0%, 100% { 
-        box-shadow: var(--neon-glow-sm);
-        border-color: var(--border-neon);
+        box-shadow: 
+          0 0 30px rgba(0, 255, 255, 0.3),
+          0 0 60px rgba(255, 0, 255, 0.2),
+          0 0 90px rgba(255, 100, 0, 0.1);
       }
       50% { 
-        box-shadow: var(--neon-glow-md);
-        border-color: var(--neon-accent);
+        box-shadow: 
+          0 0 40px rgba(255, 0, 255, 0.4),
+          0 0 80px rgba(255, 100, 0, 0.3),
+          0 0 120px rgba(0, 255, 255, 0.2);
+      }
+    }
+
+    @keyframes neonRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes separatorPulse {
+      0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.7;
+        transform: scale(1.1);
       }
     }
 
     /* Responsive */
     @media (max-width: 768px) {
       .countdown-container {
-        padding: var(--space-md);
+        padding: 30px 40px;
       }
 
       .countdown-display {
+        gap: 15px;
+
         .time-unit {
+          width: 70px;
+          height: 70px;
+          min-width: 70px;
+          min-height: 70px;
+
           .time-value {
-            font-size: var(--font-size-xl);
+            font-size: 36px;
           }
         }
 
         .time-separator {
-          font-size: var(--font-size-xl);
+          font-size: 36px;
         }
       }
     }
 
     @media (max-width: 480px) {
+      .countdown-container {
+        padding: 20px 30px;
+      }
+
       .countdown-display {
-        gap: var(--space-xs);
+        gap: 10px;
 
         .time-unit {
+          width: 60px;
+          height: 60px;
+          min-width: 60px;
+          min-height: 60px;
+
           .time-value {
-            font-size: var(--font-size-lg);
+            font-size: 28px;
           }
         }
 
         .time-separator {
-          font-size: var(--font-size-lg);
+          font-size: 28px;
         }
       }
     }

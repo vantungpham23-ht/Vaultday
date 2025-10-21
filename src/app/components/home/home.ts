@@ -33,14 +33,19 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.loadPublicRooms();
+  async ngOnInit() {
+    // Test database connection first
+    console.log('Testing Neon database connection...');
+    const connectionTest = await this.supabaseService.testConnection();
+    console.log('Connection test result:', connectionTest);
     
-    // Test Netlify function
-    console.log('Testing Netlify function...');
-    testDbQuery();
-    testDbQueryPost();
-    testDbConnection();
+    if (connectionTest.ok) {
+      console.log('✅ Database connection successful!');
+      this.loadPublicRooms();
+    } else {
+      console.error('❌ Database connection failed:', connectionTest.error);
+      this.errorMessage = 'Không thể kết nối database. Vui lòng kiểm tra cấu hình.';
+    }
   }
 
   async onJoinRoom() {
