@@ -4,10 +4,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { ChatService, Message } from '../../services/chat.service';
 import { SupabaseService, Room } from '../../services/supabase.service';
+import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 
 @Component({
   selector: 'app-chat-room',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent],
   templateUrl: './chat-room.html',
   styleUrl: './chat-room.scss'
 })

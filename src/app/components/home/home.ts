@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SupabaseService, Room } from '../../services/supabase.service';
+import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, CountdownTimerComponent],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })

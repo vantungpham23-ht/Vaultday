@@ -3,8 +3,13 @@
   <div class="header-section">
     <div class="header-content">
       <h1 class="app-title glow">VaultDay</h1>
-      <p class="app-subtitle">Một ngày trong 'két', rồi xoá.</p>
+      <p class="app-subtitle">Nhắn tin trong ngày</p>
     </div>
+  </div>
+
+  <!-- Countdown Timer Section -->
+  <div class="countdown-section">
+    <app-countdown-timer></app-countdown-timer>
   </div>
 
   <!-- Latest Room Section -->
@@ -133,5 +138,10 @@
   <div *ngIf="successMessage" class="success-toast">
     <span class="success-icon">✅</span>
     {{ successMessage }}
+  </div>
+
+  <!-- Version Footer -->
+  <div class="version-footer">
+    <p class="version-text">Version 0.0.1</p>
   </div>
 </div>
