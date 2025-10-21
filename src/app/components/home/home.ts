@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SupabaseService, Room } from '../../services/supabase.service';
 import { CountdownTimerComponent } from '../countdown-timer/countdown-timer';
+import { testDbQuery, testDbQueryPost } from '../../services/test-db.service';
 
 @Component({
   selector: 'app-home',
@@ -40,6 +41,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.loadPublicRooms();
+    
+    // Test Netlify function
+    console.log('Testing Netlify function...');
+    testDbQuery();
+    testDbQueryPost();
   }
 
   onJoinRoom() {

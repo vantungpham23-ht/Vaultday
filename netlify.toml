@@ -1,11 +1,11 @@
 [build]
-  command = "ng build --prod"
+  command = "ng build --configuration production"
   publish = "dist/VaultDay/browser"
 
-[dev]
-  command = "ng serve"
-  port = 4200
+[build.environment]
+  NODE_VERSION = "20"
 
+# SPA fallback (Angular router)
 [[redirects]]
   from = "/*"
   to = "/index.html"
