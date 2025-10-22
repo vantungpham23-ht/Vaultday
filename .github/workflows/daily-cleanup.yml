@@ -1,0 +1,36 @@
+name: Daily Cleanup at Midnight
+on:
+  schedule:
+    - cron: '0 17 * * *'  # Chạy vào 17h UTC (0h Việt Nam UTC+7)
+  workflow_dispatch:  # Cho phép chạy manual
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete ALL rooms and messages at midnight
+        run: |
+          echo "🕛 Starting midnight cleanup - deleting ALL rooms and messages..."
+          
+          # Call the cleanup API
+          response=$(curl -s -X POST https://vaultday.netlify.app/.netlify/functions/daily-cleanup \
+            -H "Content-Type: application/json" \
+            -w "HTTPSTATUS:%{http_code}")
+          
+          # Parse response
+          http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+          body=$(echo $response | sed -e 's/HTTPSTATUS:.*//g')
+          
+          echo "📊 HTTP Status: $http_code"
+          echo "📋 Response: $body"
+          
+          if [ $http_code -eq 200 ]; then
+            echo "✅ Midnight cleanup completed successfully"
+            echo "📈 Stats:"
+            echo "$body" | jq '.stats'
+          else
+            echo "❌ Midnight cleanup failed"
+            echo "🔍 Error details:"
+            echo "$body"
+            exit 1
+          fi
